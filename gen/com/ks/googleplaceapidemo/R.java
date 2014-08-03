@@ -227,7 +227,6 @@ containing a value of this type.
         public static final int pin=0x7f02001e;
     }
     public static final class id {
-        public static final int action_settings=0x7f05000a;
         public static final int activity_launch=0x7f050005;
         public static final int find_start=0x7f050006;
         public static final int hybrid=0x7f050004;
