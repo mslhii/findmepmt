@@ -13,6 +13,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author Michael Hii
+ * @date   7/1/2014
+ */
 public class LauncherActivity extends Activity {
 
 	@Override
