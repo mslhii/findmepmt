@@ -15,9 +15,13 @@
         <item >100000</item>
         <item >500000</item>
     </string-array>
+    <string-array name="provider">
+        <item >Yelp</item>
+        <item >Google</item>
+    </string-array>
     <string name="consumer_key">z30wCexjvKCkBaNu5DHAXg</string>
     <string name="consumer_secret">0DSB5heSfWIwO_olredxnyvZ2hA</string>
     <string name="token">IYjJE9s5Qxf2VZSBDkKzz0PeqRrixM3S</string>
     <string name="token_secret">kNePiB_O7JNdmjLRx7ey0cPl_kI</string>
-
+	<string name="google_maps_key">AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M</string>
 </resources>

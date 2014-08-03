@@ -9,6 +9,7 @@ package com.ks.googleplaceapidemo;
 
 public final class R {
     public static final class array {
+        public static final int provider=0x7f0a0001;
         public static final int radius=0x7f0a0000;
     }
     public static final class attr {
@@ -411,7 +412,7 @@ containing a value of this type.
         public static final int powered_by_google_light=0x7f020020;
     }
     public static final class id {
-        public static final int action_settings=0x7f060017;
+        public static final int action_settings=0x7f060019;
         public static final int activity_launch=0x7f060014;
         public static final int book_now=0x7f060010;
         public static final int buyButton=0x7f06000a;
@@ -423,7 +424,8 @@ containing a value of this type.
         public static final int holo_dark=0x7f060005;
         public static final int holo_light=0x7f060006;
         public static final int hybrid=0x7f060004;
-        public static final int map=0x7f060016;
+        public static final int info=0x7f060018;
+        public static final int map=0x7f060017;
         public static final int match_parent=0x7f06000c;
         public static final int monochrome=0x7f060013;
         public static final int none=0x7f060000;
@@ -432,6 +434,7 @@ containing a value of this type.
         public static final int sandbox=0x7f060008;
         public static final int satellite=0x7f060002;
         public static final int selectionDetails=0x7f06000b;
+        public static final int spinner1=0x7f060016;
         public static final int strict_sandbox=0x7f060009;
         public static final int terrain=0x7f060003;
         public static final int wrap_content=0x7f06000d;
@@ -442,6 +445,7 @@ containing a value of this type.
     public static final class layout {
         public static final int activity_launch=0x7f030000;
         public static final int activity_main=0x7f030001;
+        public static final int marker=0x7f030002;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -546,6 +550,7 @@ containing a value of this type.
         public static final int common_signin_button_text_long=0x7f04001e;
         public static final int consumer_key=0x7f040023;
         public static final int consumer_secret=0x7f040024;
+        public static final int google_maps_key=0x7f040027;
         public static final int hello_world=0x7f040022;
         public static final int token=0x7f040025;
         public static final int token_secret=0x7f040026;

@@ -38,6 +38,25 @@ public class Yelp {
 		this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
 		this.accessToken = new Token(token, tokenSecret);
 	}
+	
+	/**
+	 * Search with term, distance/rating, and location.
+	 *
+	 * @param term Search term
+	 * @param sort Sort results by distance/rating
+	 * @param latitude Latitude
+	 * @param longitude Longitude
+	 * @return JSON string response
+	 */
+	public String search(String term, int sort, double latitude, double longitude) {
+		OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
+		request.addQuerystringParameter("term", term);
+		request.addQuerystringParameter("ll", latitude + "," + longitude);
+		request.addQuerystringParameter("sort", Integer.toString(sort));
+		this.service.signRequest(this.accessToken, request);
+		Response response = request.send();
+		return response.getBody();
+	}
 
 	/**
 	 * Search with term and location.
@@ -71,19 +90,5 @@ public class Yelp {
 		this.service.signRequest(this.accessToken, request);
 		Response response = request.send();
 		return response.getBody();
-	}
-
-	// CLI
-	public static void main(String[] args) {
-		// Update tokens here from Yelp developers site, Manage API access.
-		String consumerKey = "";
-		String consumerSecret = "";
-		String token = "";
-		String tokenSecret = "";
-
-		Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
-		String response = yelp.search("burritos", 30.361471, -87.164326);
-
-		System.out.println(response);
 	}
 }

@@ -12,4 +12,11 @@
         android:layout_centerInParent="true"
         android:text="Find Pearl Milk Tea near me!" />
 
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/find_start"
+        android:layout_alignParentLeft="true" />
+
 </RelativeLayout>

@@ -29,7 +29,6 @@ public class Result {
     private String address; //"display_address"
     private String phone; //"display_phone"
     private int rating; //"rating"
-    private boolean hasCoordinates;
     private Double latitude; //"coordinate.latitude"
     private Double longitude; //"coordinate.longitude"
     private String isOpen = "false"; //"is_closed"
@@ -187,7 +186,7 @@ public class Result {
 			conn.connect();
 			String responseString = convertStreamToString(conn.getInputStream());
 			JSONObject response = new JSONObject(responseString);
-			this.parseJSONLatLong(response);
+			this.parseJSONLatLong(response.getJSONArray("results").getJSONObject(0));
 			conn.disconnect();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -218,7 +217,8 @@ public class Result {
 		}
     }
     
-    private static String convertStreamToString(java.io.InputStream is) {
+    @SuppressWarnings("resource")
+	private static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }

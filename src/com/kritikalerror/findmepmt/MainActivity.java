@@ -10,13 +10,13 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
@@ -39,108 +39,168 @@ import com.ks.googleplaceapidemo.R;
  *
  */
 public class MainActivity extends Activity {
+	private final String PARAMS = "boba milk bubble tea tapioca";
+	private int yelpSortChoice = 1;
 
 	private final String TAG = getClass().getSimpleName();
 	private GoogleMap mMap;
-	private String[] places;
 	private LocationManager locationManager;
 	private Location loc;
-	
-	private String yelpResults;
-	
-	private Result yelpObject;
+	private String provider;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		Intent intent = getIntent();
+		provider = intent.getExtras().getString("provider");
 
 		initMap();
 
-		// Generate user list of radii to search
-		//TODO: deprecated?
-		places = getResources().getStringArray(R.array.radius);
+		// Generate user list of providers to search
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(provider);
+		if(provider.equals("Yelp"))
+		{
+			list.add("Google");
+		}
+		else
+		{
+			list.add("Yelp");
+		}
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, list);
+		final ArrayList<String> providerList = list;
+		
+		// Initial search
 		currentLocation();
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(
-				this, R.array.radius, android.R.layout.simple_list_item_1),
+		
+		// When user refreshes
+		actionBar.setListNavigationCallbacks(dataAdapter,
 				new ActionBar.OnNavigationListener() {
 
 			@Override
 			public boolean onNavigationItemSelected(int itemPosition,
-					long itemId) {
-				Log.e(TAG,
-						places[itemPosition].toLowerCase().replace("-",
-								"_"));
-				if (loc != null) {
+					long itemId) 
+			{
+				if (loc != null) 
+				{
 					mMap.clear();
-					new GetPlaces(MainActivity.this,
-							places[itemPosition].toLowerCase().replace(
-									"-", "_").replace(" ", "_")).execute();
-					new GetYelp().execute();
+					if(providerList.get(itemPosition).equals("Google"))
+					{
+						new GetPlaces(MainActivity.this).execute();
+					}
+					else if(providerList.get(itemPosition).equals("Yelp"))
+					{
+						new GetYelp().execute();
+					}
+					else
+					{
+						Toast.makeText(getApplicationContext(), "Invalid provider selected!",
+								Toast.LENGTH_LONG).show();
+					}
 				}
 				return true;
 			}
 		});
 	}
 
-	private class GetYelp extends AsyncTask<Void, Void, String>
+	private class GetYelp extends AsyncTask<Void, Void, ArrayList<Result>>
 	{
-		protected String doInBackground(Void... params) {
+		// Query Yelp for list of places
+		protected ArrayList<Result> doInBackground(Void... params) {
 			Yelp yelp = Yelp.getYelp(MainActivity.this);
-			String businesses = yelp.search("boba milk bubble tea tapioca", loc.getLatitude(), loc.getLongitude());
+			String businesses = yelp.search(PARAMS, yelpSortChoice, loc.getLatitude(), loc.getLongitude());
 			try {
 				return processJson(businesses);
 			} catch (JSONException e) {
 				Log.e("errorage", e.getMessage());
-				return businesses;
+				return null;
 			}
 		}
 
+		// Display results on map
 		@Override
-		protected void onPostExecute(String result) {
-			yelpResults = result;
-			Log.w("tag", yelpResults);
+		protected void onPostExecute(ArrayList<Result> result) {
+			//super.onPostExecute(result);
+
+			CameraPosition cameraPosition;
+			
+			// Add marker of current position
+			mMap.addMarker(new MarkerOptions()
+			.title("Current Position")
+			.position(
+					new LatLng(loc.getLatitude(), loc.getLongitude()))
+					.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.man))
+							.snippet("I am here!"));
+			
+			if (result.size() == 0)
+			{
+				Toast.makeText(getApplicationContext(), "Yelp cannot find any PMT place near you!",
+						Toast.LENGTH_LONG).show();
+				
+				cameraPosition = new CameraPosition.Builder()
+				.target(new LatLng(loc.getLatitude(), loc.getLongitude()))
+				.zoom(13) // Sets the zoom
+				.tilt(30) // Sets the tilt of the camera to 30 degrees
+				.build(); // Creates a CameraPosition from the builder
+				mMap.animateCamera(CameraUpdateFactory
+						.newCameraPosition(cameraPosition));
+			}
+			else
+			{
+				// Add markers of all found places
+				for (int i = 0; i < result.size(); i++) 
+				{
+					// Adding the if to safeguard against any failed geocodes
+					if(result.get(i).getLatitude() != null && result.get(i).getLongitude() != null)
+					{
+						String snippetString = result.get(i).getRating() + " stars, " + 
+								result.get(i).getAddress();
+						
+						if(result.get(i).getPhone() != null)
+						{
+							snippetString = snippetString + ", " + result.get(i).getPhone();
+						}
+						
+						mMap.addMarker(new MarkerOptions()
+						.title(result.get(i).getName())
+						.position(
+								new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()))
+										.icon(BitmapDescriptorFactory
+												.fromResource(R.drawable.pin))
+												.snippet(snippetString));
+					}
+				}
+				
+				cameraPosition = new CameraPosition.Builder()
+				.target(new LatLng(result.get(0).getLatitude(), result
+						.get(0).getLongitude())) // Sets camera to first result
+						.zoom(14) // Sets the zoom
+						.tilt(30) // Sets the tilt of the camera to 30 degrees
+						.build(); // Creates a CameraPosition from the builder
+				mMap.animateCamera(CameraUpdateFactory
+						.newCameraPosition(cameraPosition));
+			}
+
 			setProgressBarIndeterminateVisibility(false);
 		}
 
-		String processJson(String jsonStuff) throws JSONException {
+		ArrayList<Result> processJson(String jsonStuff) throws JSONException 
+		{
 			JSONObject json = new JSONObject(jsonStuff);
-			
-			// Debug only!!
-			Log.w("doge", json.toString());
-			
+
 			JSONArray businesses = json.getJSONArray("businesses");
-			ArrayList<String> businessNames = new ArrayList<String>(businesses.length());
 			ArrayList<Result> businessList = new ArrayList<Result>(businesses.length());
 			for (int i = 0; i < businesses.length(); i++) 
 			{
 				businessList.add(Result.jsonToClass(businesses.getJSONObject(i)));
-				
-				//TODO: old please delete!!
-				/*
-				JSONObject business = businesses.getJSONObject(i);
-				
-				JSONObject locations = business.getJSONObject("location");
-				//businessNames.add(business.getString("name"));
-				String sum = business.getString("name") + "/" 
-						+ business.getString("rating") + "/"
-						+ locations.getJSONArray("address").getString(0) + "/"
-						+ locations.getString("city") + "/"
-						+ locations.getString("state_code") + "/";
-				
-				if(locations.has("coordinate"))
-				{
-					String latitude = locations.getJSONObject("coordinate").getString("latitude");
-					String longitude = locations.getJSONObject("coordinate").getString("longitude");
-					sum = sum + "/" + latitude + "/" + longitude;
-				}
-				businessNames.add(sum);
-				*/
 			}
-			//http://maps.google.com/maps/api/geocode/json?address=2086+University+Ave,+Berkeley,+CA
-			return TextUtils.join("\n", businessNames);
+			return businessList;
 		}
 	}
 
@@ -148,12 +208,10 @@ public class MainActivity extends Activity {
 	{
 		private ProgressDialog dialog;
 		private Context context;
-		private String places;
 
-		public GetPlaces(Context context, String places) 
+		public GetPlaces(Context context) 
 		{
 			this.context = context;
-			this.places = places;
 		}
 
 		@Override
@@ -179,7 +237,7 @@ public class MainActivity extends Activity {
 
 			if (result.size() == 0)
 			{
-				Toast.makeText(getApplicationContext(), "Cannot find any PMT place near you!",
+				Toast.makeText(getApplicationContext(), "Google cannot find any PMT place near you!",
 						Toast.LENGTH_LONG).show();
 
 				cameraPosition = new CameraPosition.Builder()
@@ -230,17 +288,10 @@ public class MainActivity extends Activity {
 		@Override
 		protected ArrayList<Place> doInBackground(Void... arg0) 
 		{
-			PlacesService service = new PlacesService(
-					"AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M");
+			PlacesService service = new PlacesService("AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M");
 			ArrayList<Place> findPlaces; 
-			findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
-					loc.getLongitude(), places); // 77.218276
+			findPlaces = service.findPlaces(loc.getLatitude(), loc.getLongitude());
 
-			for (int i = 0; i < findPlaces.size(); i++) 
-			{		
-				Place placeDetail = findPlaces.get(i);
-				Log.e(TAG, "places : " + placeDetail.getName() + ", vicinity: " + placeDetail.getVicinity());
-			}
 			return findPlaces;
 		}
 
@@ -275,8 +326,14 @@ public class MainActivity extends Activity {
 		else 
 		{
 			loc = location;
-			new GetPlaces(MainActivity.this, places[0].toLowerCase().replace(
-					"-", "_")).execute();
+			if(provider.equals("Google"))
+			{
+				new GetPlaces(MainActivity.this).execute();
+			}
+			else if(provider.equals("Yelp"))
+			{
+				new GetYelp().execute();
+			}
 			Log.e(TAG, "location : " + location);
 		}
 

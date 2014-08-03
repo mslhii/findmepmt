@@ -1,3 +1,4 @@
+int array provider 0x7f0a0001
 int array radius 0x7f0a0000
 int attr adSize 0x7f010000
 int attr adSizes 0x7f010001
@@ -93,7 +94,7 @@ int drawable man 0x7f02001d
 int drawable pin 0x7f02001e
 int drawable powered_by_google_dark 0x7f02001f
 int drawable powered_by_google_light 0x7f020020
-int id action_settings 0x7f060017
+int id action_settings 0x7f060019
 int id activity_launch 0x7f060014
 int id book_now 0x7f060010
 int id buyButton 0x7f06000a
@@ -105,7 +106,8 @@ int id grayscale 0x7f060012
 int id holo_dark 0x7f060005
 int id holo_light 0x7f060006
 int id hybrid 0x7f060004
-int id map 0x7f060016
+int id info 0x7f060018
+int id map 0x7f060017
 int id match_parent 0x7f06000c
 int id monochrome 0x7f060013
 int id none 0x7f060000
@@ -114,12 +116,14 @@ int id production 0x7f060007
 int id sandbox 0x7f060008
 int id satellite 0x7f060002
 int id selectionDetails 0x7f06000b
+int id spinner1 0x7f060016
 int id strict_sandbox 0x7f060009
 int id terrain 0x7f060003
 int id wrap_content 0x7f06000d
 int integer google_play_services_version 0x7f070000
 int layout activity_launch 0x7f030000
 int layout activity_main 0x7f030001
+int layout marker 0x7f030002
 int menu main 0x7f0b0000
 int string action_settings 0x7f040021
 int string app_name 0x7f040020
@@ -156,6 +160,7 @@ int string common_signin_button_text 0x7f04001d
 int string common_signin_button_text_long 0x7f04001e
 int string consumer_key 0x7f040023
 int string consumer_secret 0x7f040024
+int string google_maps_key 0x7f040027
 int string hello_world 0x7f040022
 int string token 0x7f040025
 int string token_secret 0x7f040026

@@ -17,8 +17,8 @@ import android.util.Log;
 /**
  *  Create request for Places API.
  * 
- * @author Michael Hii
- * @Date   6/4/2014
+ * @author Karn Shah
+ * @Date   10/3/2013
  *
  */
 public class PlacesService {
@@ -33,10 +33,9 @@ public class PlacesService {
 		this.API_KEY = apikey;
 	}
 
-	public ArrayList<Place> findPlaces(double latitude, double longitude,
-			String placeSpacification) {
-
-		String urlString = makeUrl(latitude, longitude, placeSpacification);
+	public ArrayList<Place> findPlaces(double latitude, double longitude) 
+	{
+		String urlString = makeUrl(latitude, longitude);
 
 		try {
 			String json = getJSON(urlString);
@@ -63,31 +62,17 @@ public class PlacesService {
 		return null;
 	}
 
-	// https://maps.googleapis.com/maps/api/place/search/json?location=28.632808,77.218276&radius=500&types=atm&sensor=false&key=apikey
-	private String makeUrl(double latitude, double longitude, String place) {
+	private String makeUrl(double latitude, double longitude) {
 		StringBuilder urlString = new StringBuilder(
 				"https://maps.googleapis.com/maps/api/place/search/json?");
 
-		if (place.equals("")) {
-			urlString.append("&location=");
-			urlString.append(Double.toString(latitude));
-			urlString.append(",");
-			urlString.append(Double.toString(longitude));
-			urlString.append("&radius=1000");
-			// urlString.append("&types="+place);
-			urlString.append("&sensor=false&key=" + API_KEY);
-		} else {
-			urlString.append("&location=");
-			urlString.append(Double.toString(latitude));
-			urlString.append(",");
-			urlString.append(Double.toString(longitude));
-			//urlString.append("&radius=1000");
-			//urlString.append("&types=" + place);
-			//urlString.append("&radius=" + place);
-			urlString.append("&keyword=milk+tea+boba+tapioca+pearl");
-			urlString.append("&rankby=distance");
-			urlString.append("&sensor=false&key=" + API_KEY);
-		}
+		urlString.append("&location=");
+		urlString.append(Double.toString(latitude));
+		urlString.append(",");
+		urlString.append(Double.toString(longitude));
+		urlString.append("&keyword=milk+tea+boba+tapioca+pearl");
+		urlString.append("&rankby=distance");
+		urlString.append("&sensor=false&key=" + API_KEY);
 		return urlString.toString();
 	}
 
