@@ -19,7 +19,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ks.googleplaceapidemo.R;
 
@@ -35,7 +38,7 @@ import com.ks.googleplaceapidemo.R;
  *  This class is used to search places using Places API using keywords like police,hospital etc.
  * 
  * @author Michael Hii
- * @Date   6/4/2014
+ * @Date   7/30/2014
  *
  */
 public class MainActivity extends Activity {
@@ -95,7 +98,7 @@ public class MainActivity extends Activity {
 					}
 					else if(providerList.get(itemPosition).equals("Yelp"))
 					{
-						new GetYelp().execute();
+						new GetYelp(MainActivity.this).execute();
 					}
 					else
 					{
@@ -110,6 +113,14 @@ public class MainActivity extends Activity {
 
 	private class GetYelp extends AsyncTask<Void, Void, ArrayList<Result>>
 	{
+		private ProgressDialog dialog;
+		private Context context;
+
+		public GetYelp(Context context) 
+		{
+			this.context = context;
+		}
+		
 		// Query Yelp for list of places
 		protected ArrayList<Result> doInBackground(Void... params) {
 			Yelp yelp = Yelp.getYelp(MainActivity.this);
@@ -121,22 +132,38 @@ public class MainActivity extends Activity {
 				return null;
 			}
 		}
+		
+		@Override
+		protected void onPreExecute() 
+		{
+			super.onPreExecute();
+			dialog = new ProgressDialog(context);
+			dialog.setCancelable(false);
+			dialog.setMessage("Loading..");
+			dialog.isIndeterminate();
+			dialog.show();
+		}
 
 		// Display results on map
 		@Override
 		protected void onPostExecute(ArrayList<Result> result) {
-			//super.onPostExecute(result);
+			super.onPostExecute(result);
+			if (dialog.isShowing()) 
+			{
+				dialog.dismiss();
+			}
 
 			CameraPosition cameraPosition;
 			
 			// Add marker of current position
 			mMap.addMarker(new MarkerOptions()
-			.title("Current Position")
 			.position(
 					new LatLng(loc.getLatitude(), loc.getLongitude()))
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.man))
 							.snippet("I am here!"));
+			
+			ArrayList<Marker> markerList = new ArrayList<Marker>();
 			
 			if (result.size() == 0)
 			{
@@ -152,30 +179,53 @@ public class MainActivity extends Activity {
 						.newCameraPosition(cameraPosition));
 			}
 			else
-			{
+			{					
 				// Add markers of all found places
 				for (int i = 0; i < result.size(); i++) 
 				{
 					// Adding the if to safeguard against any failed geocodes
 					if(result.get(i).getLatitude() != null && result.get(i).getLongitude() != null)
 					{
-						String snippetString = result.get(i).getRating() + " stars, " + 
+						String snippetString = result.get(i).getName() + "\n" + 
+								result.get(i).getRating() + " stars\n" + 
 								result.get(i).getAddress();
 						
 						if(result.get(i).getPhone() != null)
 						{
-							snippetString = snippetString + ", " + result.get(i).getPhone();
+							snippetString = snippetString + "\n" + result.get(i).getPhone();
 						}
 						
-						mMap.addMarker(new MarkerOptions()
-						.title(result.get(i).getName())
-						.position(
-								new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()))
-										.icon(BitmapDescriptorFactory
-												.fromResource(R.drawable.pin))
-												.snippet(snippetString));
+						MarkerOptions markerOptions = new MarkerOptions();
+						markerOptions.position(new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()));
+						markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
+						markerOptions.snippet(snippetString);
+
+						Marker marker = mMap.addMarker(markerOptions);
+						markerList.add(marker);
 					}
 				}
+				
+				mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+			        @Override
+			        public View getInfoWindow(Marker arg0) {
+			            return null;
+			        }
+
+			        @Override
+			        public View getInfoContents(Marker marker) {
+
+			            View v = getLayoutInflater().inflate(R.layout.marker, null);
+
+			            TextView info= (TextView) v.findViewById(R.id.info);
+
+			            info.setText(marker.getSnippet());
+
+			            return v;
+			        }
+			    });
+				
+				final Marker firstMarker = markerList.get(0);
 				
 				cameraPosition = new CameraPosition.Builder()
 				.target(new LatLng(result.get(0).getLatitude(), result
@@ -184,7 +234,19 @@ public class MainActivity extends Activity {
 						.tilt(30) // Sets the tilt of the camera to 30 degrees
 						.build(); // Creates a CameraPosition from the builder
 				mMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition));
+						.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                    	// TODO Auto-generated method stub
+                    	// Display info window of nearest pmt shop
+                    	firstMarker.showInfoWindow();
+                    }
+
+					@Override
+					public void onCancel() {
+						// TODO Auto-generated method stub
+					}
+                }); 
 			}
 
 			setProgressBarIndeterminateVisibility(false);
@@ -225,10 +287,11 @@ public class MainActivity extends Activity {
 			{
 				dialog.dismiss();
 			}
+			
+			ArrayList<Marker> markerList = new ArrayList<Marker>();
 
 			// Add marker of current position
 			mMap.addMarker(new MarkerOptions()
-			.title("Current Position")
 			.position(
 					new LatLng(loc.getLatitude(), loc.getLongitude()))
 					.icon(BitmapDescriptorFactory
@@ -253,15 +316,22 @@ public class MainActivity extends Activity {
 				// Add markers of all found places
 				for (int i = 0; i < result.size(); i++) 
 				{
-					mMap.addMarker(new MarkerOptions()
+					String snippetString = result.get(i).getName() + "\n" +
+							result.get(i).getVicinity();
+					
+					Marker marker = mMap.addMarker(new MarkerOptions()
 					.title(result.get(i).getName())
 					.position(
 							new LatLng(result.get(i).getLatitude(), result
 									.get(i).getLongitude()))
 									.icon(BitmapDescriptorFactory
 											.fromResource(R.drawable.pin))
-											.snippet(result.get(i).getVicinity()));
+											.snippet(snippetString));
+					
+					markerList.add(marker);
 				}
+				final Marker firstMarker = markerList.get(0);
+				
 				cameraPosition = new CameraPosition.Builder()
 				.target(new LatLng(result.get(0).getLatitude(), result
 						.get(0).getLongitude())) // Sets the center of the map to
@@ -269,8 +339,21 @@ public class MainActivity extends Activity {
 						.zoom(14) // Sets the zoom
 						.tilt(30) // Sets the tilt of the camera to 30 degrees
 						.build(); // Creates a CameraPosition from the builder
+				
 				mMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition));
+						.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        //DO some stuff here!
+                    	Log.d("animation", "onFinishCalled");
+                    	firstMarker.showInfoWindow();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    	Log.d("animation", "onCancel");
+                    }
+                }); 
 			}
 		}
 
@@ -332,7 +415,7 @@ public class MainActivity extends Activity {
 			}
 			else if(provider.equals("Yelp"))
 			{
-				new GetYelp().execute();
+				new GetYelp(MainActivity.this).execute();
 			}
 			Log.e(TAG, "location : " + location);
 		}

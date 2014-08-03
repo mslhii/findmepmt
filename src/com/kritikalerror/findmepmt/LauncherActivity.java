@@ -49,6 +49,7 @@ public class LauncherActivity extends Activity {
 					Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 					Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
 					toAnotherActivity.putExtra("provider", String.valueOf(spinner.getSelectedItem()));
+					toAnotherActivity.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 					startActivity(toAnotherActivity);
 				}
 			}
@@ -60,8 +61,8 @@ public class LauncherActivity extends Activity {
 	            int pos, long id) {
 	        // An item was selected. You can retrieve the selected item using
 	        // parent.getItemAtPosition(pos)
-	    	Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(),
-					Toast.LENGTH_LONG).show();
+	    	//Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(),
+			//		Toast.LENGTH_LONG).show();
 	    }
 
 	    public void onNothingSelected(AdapterView<?> parent) {
