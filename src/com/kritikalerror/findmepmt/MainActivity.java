@@ -1,5 +1,8 @@
 package com.kritikalerror.findmepmt;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -13,6 +16,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.GpsStatus.Listener;
 import android.location.Location;
@@ -20,15 +25,22 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -64,16 +76,35 @@ public class MainActivity extends Activity {
 	private String provider;
 	
 	private ProgressDialog locateDialog;
+	private AdView adView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		FrameLayout layout = (FrameLayout) findViewById(R.id.map);
 
 		Intent intent = getIntent();
 		provider = intent.getExtras().getString("provider");
 
 		initMap();
+		
+		// Create and setup the AdMob view
+		adView = new AdView(this);
+
+		adView.setAdSize(AdSize.SMART_BANNER);
+		adView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
+		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+		
+		// Add the AdMob view
+		FrameLayout.LayoutParams adParams = 
+				new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, 
+						FrameLayout.LayoutParams.WRAP_CONTENT);
+
+		layout.addView(adView, adParams);
+
+		adView.loadAd(adRequestBuilder.build());
 
 		// Check for any location/GPS access
 		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -219,19 +250,30 @@ public class MainActivity extends Activity {
 					// Adding the if to safeguard against any failed geocodes
 					if(result.get(i).getLatitude() != null && result.get(i).getLongitude() != null)
 					{
-						String snippetString = result.get(i).getName() + "\n" + 
-								result.get(i).getRating() + " stars\n" + 
+						String snippetString = "<b>" + result.get(i).getName() + "</b><br>" + 
 								result.get(i).getAddress();
 
 						if(result.get(i).getPhone() != null)
 						{
-							snippetString = snippetString + "\n" + result.get(i).getPhone();
+							snippetString = snippetString + "<br><u>+1" + 
+									result.get(i).getPhone() + "</u>";
 						}
+						
+						/*
+						if(result.get(i).isOpen() != null)
+						{
+							snippetString = snippetString + "<br>" + 
+									result.get(i).isOpen();
+						}
+						*/
 
 						MarkerOptions markerOptions = new MarkerOptions();
 						markerOptions.position(new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()));
 						markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
 						markerOptions.snippet(snippetString);
+						markerOptions.title(result.get(i).getRating());
+						//markerOptions.title(result.get(i).getImage());
+						markerOptions.draggable(false);
 
 						Marker marker = mMap.addMarker(markerOptions);
 						markerList.add(marker);
@@ -251,9 +293,65 @@ public class MainActivity extends Activity {
 						View v = getLayoutInflater().inflate(R.layout.marker, null);
 
 						TextView info= (TextView) v.findViewById(R.id.info);
+						ImageView image = (ImageView) v.findViewById(R.id.rating);
 
-						info.setText(marker.getSnippet());
-
+						info.setText(Html.fromHtml(marker.getSnippet()));
+						
+						if(marker.getTitle().equals("0"))
+						{
+							image.setImageResource(R.drawable.zero);
+						}
+						else if(marker.getTitle().equals("1"))
+						{
+							image.setImageResource(R.drawable.one);
+						}
+						else if(marker.getTitle().equals("1.5"))
+						{
+							image.setImageResource(R.drawable.onehalf);
+						}
+						else if(marker.getTitle().equals("2"))
+						{
+							image.setImageResource(R.drawable.two);
+						}
+						else if(marker.getTitle().equals("2.5"))
+						{
+							image.setImageResource(R.drawable.twohalf);
+						}
+						else if(marker.getTitle().equals("3"))
+						{
+							image.setImageResource(R.drawable.three);
+						}
+						else if(marker.getTitle().equals("3.5"))
+						{
+							image.setImageResource(R.drawable.threehalf);
+						}
+						else if(marker.getTitle().equals("4"))
+						{
+							image.setImageResource(R.drawable.four);
+						}
+						else if(marker.getTitle().equals("4.5"))
+						{
+							image.setImageResource(R.drawable.fourhalf);
+						}
+						else if(marker.getTitle().equals("5"))
+						{
+							image.setImageResource(R.drawable.five);
+						}
+						
+						/*
+						URL newurl;
+						Bitmap mIcon_val;
+						try {
+							Log.e(TAG, "test:" + marker.getTitle());
+							newurl = new URL(marker.getTitle());
+							mIcon_val = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+							image.setImageBitmap(mIcon_val);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						*/
+						
 						return v;
 					}
 				});

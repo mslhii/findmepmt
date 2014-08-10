@@ -28,10 +28,11 @@ public class Result {
     private String name; //"name"
     private String address; //"display_address"
     private String phone; //"display_phone"
-    private int rating; //"rating"
+    private String rating; //"rating"
     private Double latitude; //"coordinate.latitude"
     private Double longitude; //"coordinate.longitude"
     private String isOpen = "false"; //"is_closed"
+    private String imgUrl;
     
     /*
      * Constructor for Yelp Result class
@@ -108,20 +109,36 @@ public class Result {
     }
     
     public void setOpen(String open) {
-    	this.isOpen = open;
+    	if(open.equals("false"))
+    	{
+    		this.isOpen = "Currently Closed";
+    	}
+    	else
+    	{
+    		this.isOpen = "Currently Open";
+    	}
     }
     
     public String isOpen() {
     	return this.isOpen;
     }
     
-    public void setRating(int rating) {
+    public void setRating(String rating) {
     	this.rating = rating;
     }
     
-    public int getRating() {
+    public String getRating() {
     	return this.rating;
     }
+    
+    public void setImage(String link) {
+    	this.imgUrl = link;
+    }
+    
+    public String getImage() {
+    	return this.imgUrl;
+    }
+
 
     public static Result jsonToClass(JSONObject business) {
         try 
@@ -157,12 +174,22 @@ public class Result {
             // Set optional members
             if(business.has("rating"))
             {
-            	result.setRating(business.getInt("rating"));
+            	result.setRating(business.getString("rating"));
             }
             
             if(business.has("phone"))
             {
             	result.setPhone(business.getString("phone"));
+            }
+            
+            if(business.has("is_closed"))
+            {
+            	result.setOpen(business.getString("is_closed"));
+            }
+            
+            if(business.has("rating_img_url_large"))
+            {
+            	result.setOpen(business.getString("rating_img_url_large"));
             }
             return result;
         } 

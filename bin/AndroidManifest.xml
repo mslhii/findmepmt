@@ -55,6 +55,8 @@
         <meta-data
         	android:name="com.google.android.maps.v2.API_KEY"
         	android:value="AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M" />
+        <activity android:name="com.google.android.gms.ads.AdActivity"
+			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
         <!--  android:value="AIzaSyAtjYwx8bWn5GVc3a-YqfaCuNV5E6ZQWc" /> -->
     </application>
 

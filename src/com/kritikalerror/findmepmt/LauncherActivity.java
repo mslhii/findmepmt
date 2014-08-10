@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -35,11 +36,9 @@ public class LauncherActivity extends Activity {
 		// Apply the adapter to the spinner
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(new SpinnerCheck());
-		
-		final String selection = String.valueOf(spinner.getSelectedItem());
 
 		// Set the button
-		final Button activityButton = (Button) findViewById(R.id.find_start);
+		final ImageButton activityButton = (ImageButton) findViewById(R.id.find_start);
 
 		activityButton.setOnClickListener(
 			new View.OnClickListener()

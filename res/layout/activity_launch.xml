@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
+    <ImageButton
         android:id="@+id/find_start"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Find Pearl Milk Tea near me!" />
+        android:src="@drawable/button" />
 
     <Spinner
         android:id="@+id/spinner1"
