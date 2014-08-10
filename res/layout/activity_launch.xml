@@ -3,7 +3,8 @@
     android:id="@+id/activity_launch"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/bg_launcher" >
 
     <ImageButton
         android:id="@+id/find_start"
@@ -12,13 +13,51 @@
         android:layout_centerInParent="true"
         android:src="@drawable/button" />
 
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/find_start"
+        android:layout_alignRight="@+id/find_start"
+        android:layout_below="@+id/find_start"
+        android:typeface="sans"
+        android:textColor="#ffffff"
+        android:text="Search By:"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
     <Spinner
         android:id="@+id/spinner1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/find_start"
-        android:layout_alignLeft="@+id/find_start"
-        android:layout_alignRight="@+id/find_start"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_alignRight="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:typeface="sans"
+        android:textColor="#ffffff"
         android:gravity="center" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/find_start"
+        android:layout_centerHorizontal="true"
+        android:text="Me"
+        android:typeface="sans"
+        android:textColor="#ffffff"
+        android:textSize="32sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:text="Find"
+        android:typeface="sans"
+        android:textColor="#ffffff"
+        android:textSize="32sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

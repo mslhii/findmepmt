@@ -2,22 +2,10 @@
 <resources>
 
     <string name="app_name">Find Me PMT</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    <string-array name="radius">
-        <item >100</item>
-        <item >1000</item>
-        <item >5000</item>
-        <item >7500</item>
-        <item >25000</item>
-        <item >50000</item>
-        <item >75000</item>
-        <item >100000</item>
-        <item >500000</item>
-    </string-array>
-    <string-array name="provider">
-        <item >Yelp</item>
-        <item >Google</item>
+    <string-array name="search_types">
+        <item >Distance</item>
+        <item >Best Match</item>
+        <item >Rating</item>
     </string-array>
     <string name="consumer_key">z30wCexjvKCkBaNu5DHAXg</string>
     <string name="consumer_secret">0DSB5heSfWIwO_olredxnyvZ2hA</string>

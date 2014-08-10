@@ -30,7 +30,7 @@ public class LauncherActivity extends Activity {
 		Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 		// Create an ArrayAdapter using the string array and a default spinner layout
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-		        R.array.provider, android.R.layout.simple_spinner_item);
+		        R.array.search_types, android.R.layout.simple_spinner_item);
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
@@ -47,7 +47,7 @@ public class LauncherActivity extends Activity {
 				{
 					Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 					Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
-					toAnotherActivity.putExtra("provider", String.valueOf(spinner.getSelectedItem()));
+					toAnotherActivity.putExtra("search_type", String.valueOf(spinner.getSelectedItem()));
 					toAnotherActivity.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 					startActivity(toAnotherActivity);
 				}

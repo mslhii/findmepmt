@@ -83,28 +83,18 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		FrameLayout layout = (FrameLayout) findViewById(R.id.map);
+		// Disable action bar extras
+		ActionBar ab = getActionBar(); 
+		ab.setDisplayShowTitleEnabled(false); 
+		ab.setDisplayShowHomeEnabled(false);
 
 		Intent intent = getIntent();
-		provider = intent.getExtras().getString("provider");
+		provider = intent.getExtras().getString("search_type");
+		
+		setSearchType(provider);
 
 		initMap();
-		
-		// Create and setup the AdMob view
-		adView = new AdView(this);
-
-		adView.setAdSize(AdSize.SMART_BANNER);
-		adView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
-		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-		
-		// Add the AdMob view
-		FrameLayout.LayoutParams adParams = 
-				new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, 
-						FrameLayout.LayoutParams.WRAP_CONTENT);
-
-		layout.addView(adView, adParams);
-
-		adView.loadAd(adRequestBuilder.build());
+		loadAds();
 
 		// Check for any location/GPS access
 		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -121,17 +111,24 @@ public class MainActivity extends Activity {
 		// Generate user list of providers to search
 		ArrayList<String> list = new ArrayList<String>();
 		list.add(provider);
-		if(provider.equals("Yelp"))
+		if(provider.equals("Distance"))
 		{
-			list.add("Google");
+			list.add("Best Match");
+			list.add("Rating");
+		}
+		else if(provider.equals("Best Match"))
+		{
+			list.add("Distance");
+			list.add("Rating");
 		}
 		else
 		{
-			list.add("Yelp");
+			list.add("Distance");
+			list.add("Best Match");
 		}
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, list);
-		final ArrayList<String> providerList = list;
+		final ArrayList<String> searchTypeList = list;
 
 		// Initial search
 		currentLocation();
@@ -148,31 +145,67 @@ public class MainActivity extends Activity {
 			{
 				if (loc != null) 
 				{
+					setSearchType(searchTypeList.get(itemPosition));
 					mMap.clear();
-					beginQuery(providerList.get(itemPosition));
+					beginQuery();
 				}
 				return true;
 			}
 		});
 	}
 	
-	private void beginQuery(String providerChoice)
+	/**
+	 * Load Ads in MainActivity screen
+	 * Don't want to load them first in Launcher,
+	 * since user will spend the most time staring at a map
+	 */
+	private void loadAds()
 	{
-		if(providerChoice.equals("Google"))
+		// Create and setup the AdMob view
+		adView = new AdView(this);
+		FrameLayout layout = (FrameLayout) findViewById(R.id.map);
+
+		adView.setAdSize(AdSize.SMART_BANNER);
+		adView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
+		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+		
+		// Add the AdMob view
+		FrameLayout.LayoutParams adParams = 
+				new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, 
+						FrameLayout.LayoutParams.WRAP_CONTENT);
+
+		layout.addView(adView, adParams);
+
+		adView.loadAd(adRequestBuilder.build());
+	}
+	
+	/**
+	 * Set search type for Yelp API to process
+	 * 0: Best Match, 1: Distance, 2: Highest Rating found
+	 * @param choice
+	 */
+	private void setSearchType(String choice)
+	{
+		if(choice.equals("Distance"))
 		{
-			new GetPlaces(MainActivity.this).execute();
-			provider = "Google";
+			yelpSortChoice = SEARCH_BY_DISTANCE;
 		}
-		else if(providerChoice.equals("Yelp"))
+		else if(choice.equals("Best Match"))
 		{
-			new GetYelp(MainActivity.this).execute();
-			provider = "Yelp";
+			yelpSortChoice = SEARCH_BY_BEST_MATCH;
 		}
 		else
 		{
-			Toast.makeText(getApplicationContext(), "Invalid provider selected!",
-					Toast.LENGTH_LONG).show();
+			yelpSortChoice = SEARCH_BY_RATING;
 		}
+	}
+	
+	/**
+	 * Private method to begin querying Yelp
+	 */
+	private void beginQuery()
+	{
+		new GetYelp(MainActivity.this).execute();
 	}
 
 	private class GetYelp extends AsyncTask<Void, Void, ArrayList<Result>>
@@ -397,139 +430,6 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> 
-	{
-		private ProgressDialog dialog;
-		private Context context;
-
-		public GetPlaces(Context context) 
-		{
-			this.context = context;
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<Place> result) 
-		{
-			super.onPostExecute(result);
-
-			CameraPosition cameraPosition;
-
-			if (dialog.isShowing()) 
-			{
-				dialog.dismiss();
-			}
-
-			ArrayList<Marker> markerList = new ArrayList<Marker>();
-
-			// Add marker of current position
-			mMap.addMarker(new MarkerOptions()
-			.position(
-					new LatLng(loc.getLatitude(), loc.getLongitude()))
-					.icon(BitmapDescriptorFactory
-							.fromResource(R.drawable.man))
-							.snippet("I am here!"));
-
-			if (result.size() == 0)
-			{
-				Toast.makeText(getApplicationContext(), "Google cannot find any PMT place near you!",
-						Toast.LENGTH_LONG).show();
-
-				cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(loc.getLatitude(), loc.getLongitude()))
-				.zoom(13) // Sets the zoom
-				.tilt(30) // Sets the tilt of the camera to 30 degrees
-				.build(); // Creates a CameraPosition from the builder
-				mMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition));
-			}
-			else
-			{
-				// Add markers of all found places
-				for (int i = 0; i < result.size(); i++) 
-				{
-					String snippetString = result.get(i).getName() + "\n" +
-							result.get(i).getVicinity();
-
-					Marker marker = mMap.addMarker(new MarkerOptions()
-					.title(result.get(i).getName())
-					.position(
-							new LatLng(result.get(i).getLatitude(), result
-									.get(i).getLongitude()))
-									.icon(BitmapDescriptorFactory
-											.fromResource(R.drawable.pin))
-											.snippet(snippetString));
-
-					markerList.add(marker);
-				}
-				final Marker firstMarker = markerList.get(0);
-
-				cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(result.get(0).getLatitude(), result
-						.get(0).getLongitude())) // Sets the center of the map to
-						// Mountain View
-						.zoom(14) // Sets the zoom
-						.tilt(30) // Sets the tilt of the camera to 30 degrees
-						.build(); // Creates a CameraPosition from the builder
-
-				mMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
-					@Override
-					public void onFinish() {
-						//DO some stuff here!
-						Log.d("animation", "onFinishCalled");
-						firstMarker.showInfoWindow();
-					}
-
-					@Override
-					public void onCancel() {
-						Log.d("animation", "onCancel");
-					}
-				}); 
-				
-				mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-					@Override
-					public View getInfoWindow(Marker arg0) {
-						return null;
-					}
-
-					@Override
-					public View getInfoContents(Marker marker) {
-
-						View v = getLayoutInflater().inflate(R.layout.marker, null);
-
-						TextView info= (TextView) v.findViewById(R.id.info);
-
-						info.setText(marker.getSnippet());
-
-						return v;
-					}
-				});
-			}
-		}
-
-		@Override
-		protected void onPreExecute() 
-		{
-			super.onPreExecute();
-			dialog = new ProgressDialog(context);
-			dialog.setCancelable(false);
-			dialog.setMessage("Loading..");
-			dialog.isIndeterminate();
-			dialog.show();
-		}
-
-		@Override
-		protected ArrayList<Place> doInBackground(Void... arg0) 
-		{
-			PlacesService service = new PlacesService("AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M");
-			ArrayList<Place> findPlaces; 
-			findPlaces = service.findPlaces(loc.getLatitude(), loc.getLongitude());
-
-			return findPlaces;
-		}
-
-	}
 
 	private void initMap() 
 	{
@@ -541,29 +441,14 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{
 		getMenuInflater().inflate(R.menu.main, menu);
-		menu.add(0, DISTANCE_OPTION, 0, "Search by Distance");
-		menu.add(0, RATING_OPTION, 0, "Search by Rating (Yelp Only)");
-		menu.add(0, BEST_MATCH_OPTION, 0, "Search by Best Match (Yelp Only)");
+		menu.add(0, 0, 0, "Refresh Search");
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case BEST_MATCH_OPTION:
-			Log.e(TAG, "Best Matched Pressed!");
-			yelpSortChoice = SEARCH_BY_BEST_MATCH;
-			break;
-		case DISTANCE_OPTION:
-			Log.e(TAG, "Distance Pressed!");
-			yelpSortChoice = SEARCH_BY_DISTANCE;
-			break;
-		case RATING_OPTION:
-			Log.e(TAG, "Rating Pressed!");
-			yelpSortChoice = SEARCH_BY_RATING;
-			break;
-		}
-		beginQuery(this.provider);
+		Log.e(TAG, "Refreshing with choice: " + yelpSortChoice);
+		beginQuery();
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -615,7 +500,7 @@ public class MainActivity extends Activity {
 		else 
 		{
 			loc = location;
-			beginQuery(this.provider);
+			beginQuery();
 			Log.e(TAG, "location : " + location);
 		}
 
