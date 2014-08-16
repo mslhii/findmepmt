@@ -14,11 +14,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-/**
- * 
- * @author Michael Hii
- * @date   7/1/2014
- */
 public class LauncherActivity extends Activity {
 
 	@Override
@@ -48,7 +43,7 @@ public class LauncherActivity extends Activity {
 					Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 					Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
 					toAnotherActivity.putExtra("search_type", String.valueOf(spinner.getSelectedItem()));
-					toAnotherActivity.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+					//toAnotherActivity.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 					startActivity(toAnotherActivity);
 				}
 			}

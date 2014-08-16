@@ -1,9 +1,7 @@
 package com.kritikalerror.findmepmt;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,25 +14,21 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Criteria;
-import android.location.GpsStatus.Listener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +37,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -66,13 +61,10 @@ public class MainActivity extends Activity {
 	private int yelpSortChoice = SEARCH_BY_DISTANCE;
 
 	private final String TAG = getClass().getSimpleName();
-	private static final int DISTANCE_OPTION = Menu.FIRST;
-	private static final int RATING_OPTION = Menu.FIRST + 1;
-	private static final int BEST_MATCH_OPTION = Menu.FIRST + 2;
 	
 	private GoogleMap mMap;
-	private LocationManager locationManager;
-	private Location loc;
+	private LocationManager mLocationManager;
+	private Location mCurrentLocation;
 	private String provider;
 	
 	private ProgressDialog locateDialog;
@@ -97,13 +89,13 @@ public class MainActivity extends Activity {
 		loadAds();
 
 		// Check for any location/GPS access
-		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) &&
-				!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		if (!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) &&
+				!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
 			showGPSDisabledAlertToUser(false);
 		}
-		else if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		else if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
 			showGPSDisabledAlertToUser(true);
 		}
@@ -143,7 +135,7 @@ public class MainActivity extends Activity {
 			public boolean onNavigationItemSelected(int itemPosition,
 					long itemId) 
 			{
-				if (loc != null) 
+				if (mCurrentLocation != null) 
 				{
 					setSearchType(searchTypeList.get(itemPosition));
 					mMap.clear();
@@ -221,7 +213,7 @@ public class MainActivity extends Activity {
 		// Query Yelp for list of places
 		protected ArrayList<Result> doInBackground(Void... params) {
 			Yelp yelp = Yelp.getYelp(MainActivity.this);
-			String businesses = yelp.search(PARAMS, yelpSortChoice, loc.getLatitude(), loc.getLongitude());
+			String businesses = yelp.search(PARAMS, yelpSortChoice, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 			try {
 				return processJson(businesses);
 			} catch (JSONException e) {
@@ -255,10 +247,11 @@ public class MainActivity extends Activity {
 			// Add marker of current position
 			mMap.addMarker(new MarkerOptions()
 			.position(
-					new LatLng(loc.getLatitude(), loc.getLongitude()))
+					new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.man))
-							.snippet("I am here!"));
+							.snippet("I am here!")
+							.title("Current Position"));
 
 			ArrayList<Marker> markerList = new ArrayList<Marker>();
 
@@ -268,7 +261,7 @@ public class MainActivity extends Activity {
 						Toast.LENGTH_LONG).show();
 
 				cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(loc.getLatitude(), loc.getLongitude()))
+				.target(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
 				.zoom(13) // Sets the zoom
 				.tilt(30) // Sets the tilt of the camera to 30 degrees
 				.build(); // Creates a CameraPosition from the builder
@@ -286,37 +279,65 @@ public class MainActivity extends Activity {
 						String snippetString = "<b>" + result.get(i).getName() + "</b><br>" + 
 								result.get(i).getAddress();
 
+						// Set phone number
 						if(result.get(i).getPhone() != null)
 						{
 							snippetString = snippetString + "<br><u>+1" + 
 									result.get(i).getPhone() + "</u>";
 						}
-						
-						/*
-						if(result.get(i).isOpen() != null)
+						else
 						{
-							snippetString = snippetString + "<br>" + 
-									result.get(i).isOpen();
+							snippetString = snippetString + "<br>Phone Number unavailable";
 						}
-						*/
+						
+						// Titleparser string creates a string that contains multiple hidden info for parsing
+						String titleParser = "";
+						
+						if(result.get(i).getRating() != null)
+						{
+							titleParser = result.get(i).getRating() + ",";
+						}
+						else
+						{
+							snippetString = snippetString + "<br>Rating info unavailable";
+							titleParser = "None,";
+						}
+						
+						if(result.get(i).getMobileUrl() != null)
+						{
+							titleParser = titleParser + result.get(i).getMobileUrl() + ",";
+						}
+						
+						// Final tidbit to let user know to click infowindow for yelp site
+						snippetString = snippetString + "<br><font color=\"blue\">Touch me to see Yelp page!</font>";
 
 						MarkerOptions markerOptions = new MarkerOptions();
 						markerOptions.position(new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()));
 						markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
 						markerOptions.snippet(snippetString);
-						markerOptions.title(result.get(i).getRating());
-						//markerOptions.title(result.get(i).getImage());
+						markerOptions.title(titleParser);
 						markerOptions.draggable(false);
 
 						Marker marker = mMap.addMarker(markerOptions);
 						markerList.add(marker);
 					}
 				}
+				
+				mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+				    @Override
+				    public void onInfoWindowClick(Marker marker) {
+				    	String[] titleParseList = marker.getTitle().split(",");
+				        Log.w(TAG, titleParseList[1]);
+				        
+				        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(titleParseList[1]));
+				        startActivity(browserIntent);
+				    }
+				});
 
 				mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
 					@Override
-					public View getInfoWindow(Marker arg0) {
+					public View getInfoWindow(Marker marker) {
 						return null;
 					}
 
@@ -330,43 +351,46 @@ public class MainActivity extends Activity {
 
 						info.setText(Html.fromHtml(marker.getSnippet()));
 						
-						if(marker.getTitle().equals("0"))
+						String[] titleParseList = marker.getTitle().split(",");
+						
+						Log.e(TAG, "titleParseList is: " + titleParseList[0]);
+						if(titleParseList[0].equals("0"))
 						{
 							image.setImageResource(R.drawable.zero);
 						}
-						else if(marker.getTitle().equals("1"))
+						else if(titleParseList[0].equals("1.0"))
 						{
 							image.setImageResource(R.drawable.one);
 						}
-						else if(marker.getTitle().equals("1.5"))
+						else if(titleParseList[0].equals("1.5"))
 						{
 							image.setImageResource(R.drawable.onehalf);
 						}
-						else if(marker.getTitle().equals("2"))
+						else if(titleParseList[0].equals("2.0"))
 						{
 							image.setImageResource(R.drawable.two);
 						}
-						else if(marker.getTitle().equals("2.5"))
+						else if(titleParseList[0].equals("2.5"))
 						{
 							image.setImageResource(R.drawable.twohalf);
 						}
-						else if(marker.getTitle().equals("3"))
+						else if(titleParseList[0].equals("3.0"))
 						{
 							image.setImageResource(R.drawable.three);
 						}
-						else if(marker.getTitle().equals("3.5"))
+						else if(titleParseList[0].equals("3.5"))
 						{
 							image.setImageResource(R.drawable.threehalf);
 						}
-						else if(marker.getTitle().equals("4"))
+						else if(titleParseList[0].equals("4.0"))
 						{
 							image.setImageResource(R.drawable.four);
 						}
-						else if(marker.getTitle().equals("4.5"))
+						else if(titleParseList[0].equals("4.5"))
 						{
 							image.setImageResource(R.drawable.fourhalf);
 						}
-						else if(marker.getTitle().equals("5"))
+						else if(titleParseList[0].equals("5.0"))
 						{
 							image.setImageResource(R.drawable.five);
 						}
@@ -391,6 +415,7 @@ public class MainActivity extends Activity {
 
 				final Marker firstMarker = markerList.get(0);
 
+				Log.e(TAG, "result size is: " + result.size());
 				cameraPosition = new CameraPosition.Builder()
 				.target(new LatLng(result.get(0).getLatitude(), result
 						.get(0).getLongitude())) // Sets camera to first result
@@ -418,6 +443,7 @@ public class MainActivity extends Activity {
 
 		ArrayList<Result> processJson(String jsonStuff) throws JSONException 
 		{
+			//Log.w(TAG, jsonStuff);
 			JSONObject json = new JSONObject(jsonStuff);
 
 			JSONArray businesses = json.getJSONArray("businesses");
@@ -454,16 +480,16 @@ public class MainActivity extends Activity {
 
 	private void currentLocation() 
 	{
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		String locProvider = locationManager.getBestProvider(new Criteria(), false);
+		String locProvider = mLocationManager.getBestProvider(new Criteria(), false);
 
-		Location location = locationManager.getLastKnownLocation(locProvider);
+		Location location = mLocationManager.getLastKnownLocation(locProvider);
 
 		if (location == null) 
 		{
 			//TODO: app hangs here
-			locationManager.requestLocationUpdates(locProvider, 0, 0, listener);
+			mLocationManager.requestLocationUpdates(locProvider, 0, 0, listener);
 
 			locateDialog = new ProgressDialog(this);
 			locateDialog.setCancelable(true);
@@ -499,7 +525,7 @@ public class MainActivity extends Activity {
 		} 
 		else 
 		{
-			loc = location;
+			mCurrentLocation = location;
 			beginQuery();
 			Log.e(TAG, "location : " + location);
 		}
@@ -533,15 +559,13 @@ public class MainActivity extends Activity {
 		public void onLocationChanged(Location location) 
 		{
 			Log.e(TAG, "location update : " + location);
-			loc = location;
-			locationManager.removeUpdates(listener);
+			mCurrentLocation = location;
+			mLocationManager.removeUpdates(listener);
 			locateDialog.cancel();
 			
 			Context context = getApplicationContext();
 			
-			Toast.makeText(context, "Location found! Please refresh the search.", Toast.LENGTH_LONG).show();
-			
-			//context.beginQuery();
+			Toast.makeText(context, "Location found! Please refresh the search in the settings bar.", Toast.LENGTH_LONG).show();
 		}
 	};
 

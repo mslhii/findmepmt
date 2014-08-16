@@ -1,7 +1,6 @@
 package com.kritikalerror.findmepmt;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -33,6 +32,7 @@ public class Result {
     private Double longitude; //"coordinate.longitude"
     private String isOpen = "false"; //"is_closed"
     private String imgUrl;
+    private String mobileUrl;
     
     /*
      * Constructor for Yelp Result class
@@ -138,6 +138,14 @@ public class Result {
     public String getImage() {
     	return this.imgUrl;
     }
+    
+    public void setMobileUrl(String link) {
+    	this.mobileUrl = link;
+    }
+    
+    public String getMobileUrl() {
+    	return this.mobileUrl;
+    }
 
 
     public static Result jsonToClass(JSONObject business) {
@@ -185,6 +193,11 @@ public class Result {
             if(business.has("is_closed"))
             {
             	result.setOpen(business.getString("is_closed"));
+            }
+            
+            if(business.has("mobile_url"))
+            {
+            	result.setMobileUrl(business.getString("mobile_url"));
             }
             
             if(business.has("rating_img_url_large"))
