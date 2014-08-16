@@ -1,7 +1,6 @@
 package com.kritikalerror.findmepmt;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,10 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +31,11 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -53,7 +54,7 @@ import com.ks.googleplaceapidemo.R;
  * @Date   7/30/2014
  *
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
 	private final String PARAMS = "boba milk bubble tea tapioca";
 	private final int SEARCH_BY_BEST_MATCH = 0;
 	private final int SEARCH_BY_DISTANCE = 1;
@@ -63,12 +64,12 @@ public class MainActivity extends Activity {
 	private final String TAG = getClass().getSimpleName();
 	
 	private GoogleMap mMap;
-	private LocationManager mLocationManager;
 	private Location mCurrentLocation;
 	private String provider;
+	private LocationClient mLocationClient;
+	private AdView mAdView;
 	
-	private ProgressDialog locateDialog;
-	private AdView adView;
+	private boolean mHasFirstSearch = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,18 +88,17 @@ public class MainActivity extends Activity {
 
 		initMap();
 		loadAds();
-
-		// Check for any location/GPS access
-		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		if (!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) &&
-				!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		
+		// Perform check to see if Google Play Services is available
+		final int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (result != ConnectionResult.SUCCESS) 
 		{
-			showGPSDisabledAlertToUser(false);
+			Toast.makeText(this, "Google Play service is not available (status=" + result + ")", Toast.LENGTH_LONG).show();
+			showConnectionAlertToUser('w');
 		}
-		else if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		{
-			showGPSDisabledAlertToUser(true);
-		}
+		
+		// Client initiates a listener that will provide updates for locations
+		mLocationClient = new LocationClient(this, this, this);
 
 		// Generate user list of providers to search
 		ArrayList<String> list = new ArrayList<String>();
@@ -123,7 +123,6 @@ public class MainActivity extends Activity {
 		final ArrayList<String> searchTypeList = list;
 
 		// Initial search
-		currentLocation();
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
@@ -146,6 +145,20 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		mLocationClient.connect();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		mLocationClient.disconnect();
+	}
+	
 	/**
 	 * Load Ads in MainActivity screen
 	 * Don't want to load them first in Launcher,
@@ -154,11 +167,11 @@ public class MainActivity extends Activity {
 	private void loadAds()
 	{
 		// Create and setup the AdMob view
-		adView = new AdView(this);
+		mAdView = new AdView(this);
 		FrameLayout layout = (FrameLayout) findViewById(R.id.map);
 
-		adView.setAdSize(AdSize.SMART_BANNER);
-		adView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
+		mAdView.setAdSize(AdSize.SMART_BANNER);
+		mAdView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
 		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
 		
 		// Add the AdMob view
@@ -166,9 +179,9 @@ public class MainActivity extends Activity {
 				new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, 
 						FrameLayout.LayoutParams.WRAP_CONTENT);
 
-		layout.addView(adView, adParams);
+		layout.addView(mAdView, adParams);
 
-		adView.loadAd(adRequestBuilder.build());
+		mAdView.loadAd(adRequestBuilder.build());
 	}
 	
 	/**
@@ -478,120 +491,39 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void currentLocation() 
-	{
-		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-		String locProvider = mLocationManager.getBestProvider(new Criteria(), false);
-
-		Location location = mLocationManager.getLastKnownLocation(locProvider);
-
-		if (location == null) 
-		{
-			//TODO: app hangs here
-			mLocationManager.requestLocationUpdates(locProvider, 0, 0, listener);
-
-			locateDialog = new ProgressDialog(this);
-			locateDialog.setCancelable(true);
-			locateDialog.setMessage("Locating User Position...");
-			locateDialog.isIndeterminate();
-			/*
-			locateDialog.setOnCancelListener(new OnCancelListener() {
-
-	            @Override
-	            public void onCancel(DialogInterface arg0) {
-	                AlertDialog.Builder builder = new AlertDialog.Builder(locateDialog.getContext());
-	                builder.setMessage( "Are you sure you want to cancel?")
-	                       .setCancelable(false)
-	                       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	                           public void onClick(DialogInterface diag, int id) {
-	                               diag.dismiss();
-	                               locateDialog.dismiss();
-
-	                           }
-	                       })
-	                       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-	                           public void onClick(DialogInterface diag, int id) {
-	                                diag.cancel();
-	                           }
-	                       });
-	                AlertDialog alert = builder.create();
-	                alert.show();               
-	            }
-
-	        });
-	        */
-			locateDialog.show();
-		} 
-		else 
-		{
-			mCurrentLocation = location;
-			beginQuery();
-			Log.e(TAG, "location : " + location);
-		}
-
-	}
-
-	/**
-	 * Location listener to receive updates from LocationManager
-	 */
-	private LocationListener listener = new LocationListener() 
-	{
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) 
-		{
-
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) 
-		{
-
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) 
-		{
-
-		}
-
-		@Override
-		public void onLocationChanged(Location location) 
-		{
-			Log.e(TAG, "location update : " + location);
-			mCurrentLocation = location;
-			mLocationManager.removeUpdates(listener);
-			locateDialog.cancel();
-			
-			Context context = getApplicationContext();
-			
-			Toast.makeText(context, "Location found! Please refresh the search in the settings bar.", Toast.LENGTH_LONG).show();
-		}
-	};
-
-	private void showGPSDisabledAlertToUser(boolean type){
+	private void showConnectionAlertToUser(char type){
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		
 		String buttonMsg;
+		String intentChoice;
 		
-		if(type) //GPS is disabled but location network is running
+		if(type == 'g') //GPS is disabled but location network is running
 		{
 			alertDialogBuilder.setMessage("GPS is currently disabled. You can get better results by enabling GPS. Would you like to enable it?");
 			buttonMsg = "Enable GPS";
+			intentChoice = android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 		}
-		else
+		else if(type == 'l')
 		{
 			alertDialogBuilder.setMessage("Location Services is currently disabled. This app needs Location Services to function properly. Please enable Location Services.");
 			buttonMsg = "Enable Location Services";
+			intentChoice = android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 		}
+		else
+		{
+			alertDialogBuilder.setMessage("WiFi is currently disabled. This app needs WiFi to function properly. Please enable WiFi.");
+			buttonMsg = "Enable WiFi";
+			intentChoice = android.provider.Settings.ACTION_WIFI_SETTINGS;
+		}
+		
+		final String finalChoice = intentChoice;
 		
 		alertDialogBuilder.setCancelable(false);
 		alertDialogBuilder.setPositiveButton(buttonMsg,
 				new DialogInterface.OnClickListener(){
 			public void onClick(DialogInterface dialog, int id){
-				Intent callGPSSettingIntent = new Intent(
-						android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-				startActivity(callGPSSettingIntent);
+				Intent settingsIntent = new Intent(finalChoice);
+				startActivity(settingsIntent);
 			}
 		});
 		alertDialogBuilder.setNegativeButton("Cancel",
@@ -602,6 +534,33 @@ public class MainActivity extends Activity {
 		});
 		AlertDialog alert = alertDialogBuilder.create();
 		alert.show();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Connection Failed", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
+
+		mCurrentLocation = mLocationClient.getLastLocation();
+		Log.d("XXX", "location=" + mCurrentLocation.toString());
+		
+		if(!mHasFirstSearch)
+		{
+			mHasFirstSearch = true;
+			beginQuery();
+		}
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Disconnected", Toast.LENGTH_LONG).show();
 	}
 
 }
