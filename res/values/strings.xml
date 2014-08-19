@@ -4,7 +4,7 @@
     <string name="app_name">Find Me PMT</string>
     <string-array name="search_types">
         <item >Distance</item>
-        <item >Best Match</item>
+        <item >Popularity</item>
         <item >Rating</item>
     </string-array>
     <string name="consumer_key">z30wCexjvKCkBaNu5DHAXg</string>

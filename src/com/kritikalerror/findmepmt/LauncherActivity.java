@@ -26,26 +26,17 @@ public class LauncherActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launch);
 		
-		// Set the spinner
-		Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-		// Create an ArrayAdapter using the string array and a default spinner layout
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-		        R.array.search_types, android.R.layout.simple_spinner_item);
-		// Specify the layout to use when the list of choices appears
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		// Apply the adapter to the spinner
-		spinner.setAdapter(adapter);
-		spinner.setOnItemSelectedListener(new SpinnerCheck());
-
 		// Set the button
-		final ImageButton activityButton = (ImageButton) findViewById(R.id.find_start);
+		final Button distanceButton = (Button) findViewById(R.id.find_distance);
+		final Button popularButton = (Button) findViewById(R.id.find_popular);
+		final Button ratingButton = (Button) findViewById(R.id.find_rating);
+		final Button aboutButton = (Button) findViewById(R.id.about);
 
-		activityButton.setOnClickListener(
+		distanceButton.setOnClickListener(
 			new View.OnClickListener()
 			{
 				public void onClick(View aView)
 				{
-					Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 					if(!isConnected())
 					{
 						showConnectionAlertToUser();
@@ -53,21 +44,69 @@ public class LauncherActivity extends Activity {
 					else
 					{
 						Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
-						toAnotherActivity.putExtra("search_type", String.valueOf(spinner.getSelectedItem()));
+						toAnotherActivity.putExtra("search_type", "Distance");
 						startActivity(toAnotherActivity);
 					}
 				}
-				
-				private boolean isConnected()
+			}
+		);  
+		
+		popularButton.setOnClickListener(
+			new View.OnClickListener()
+			{
+				public void onClick(View aView)
 				{
-					ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-					NetworkInfo wifiCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-					NetworkInfo dataCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-					
-					return wifiCheck.isConnected() || dataCheck.isConnected();
+					if(!isConnected())
+					{
+						showConnectionAlertToUser();
+					}
+					else
+					{
+						Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
+						toAnotherActivity.putExtra("search_type", "Popularity");
+						startActivity(toAnotherActivity);
+					}
 				}
 			}
-		);       
+		);
+		
+		ratingButton.setOnClickListener(
+			new View.OnClickListener()
+			{
+				public void onClick(View aView)
+				{
+					if(!isConnected())
+					{
+						showConnectionAlertToUser();
+					}
+					else
+					{
+						Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
+						toAnotherActivity.putExtra("search_type", "Rating");
+						startActivity(toAnotherActivity);
+					}
+				}
+			}
+		);
+		
+		aboutButton.setOnClickListener(
+			new View.OnClickListener()
+			{
+				public void onClick(View aView)
+				{
+					aboutUs();
+				}
+			}
+		);
+	}
+	
+	private boolean isConnected()
+	{
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifiCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo dataCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		
+		return wifiCheck.isConnected() || dataCheck.isConnected();
 	}
 	
 	private void showConnectionAlertToUser(){
@@ -99,17 +138,19 @@ public class LauncherActivity extends Activity {
 		alert.show();
 	}
 	
-	public class SpinnerCheck implements OnItemSelectedListener {
-	    public void onItemSelected(AdapterView<?> parent, View view, 
-	            int pos, long id) {
-	        // An item was selected. You can retrieve the selected item using
-	        // parent.getItemAtPosition(pos)
-	    	//Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(),
-			//		Toast.LENGTH_LONG).show();
-	    }
+	private void aboutUs(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-	    public void onNothingSelected(AdapterView<?> parent) {
-	        // Another interface callback
-	    }
+		alertDialogBuilder.setMessage("Development: Michael H., Design: Caroline P.");
+		alertDialogBuilder.setTitle("About Us");
+		alertDialogBuilder.setCancelable(false);
+		alertDialogBuilder.setNegativeButton("OK",
+				new DialogInterface.OnClickListener(){
+			public void onClick(DialogInterface dialog, int id){
+				dialog.cancel();
+			}
+		});
+		AlertDialog alert = alertDialogBuilder.create();
+		alert.show();
 	}
 }

@@ -119,10 +119,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		list.add(provider);
 		if(provider.equals("Distance"))
 		{
-			list.add("Best Match");
+			list.add("Popularity");
 			list.add("Rating");
 		}
-		else if(provider.equals("Best Match"))
+		else if(provider.equals("Popularity"))
 		{
 			list.add("Distance");
 			list.add("Rating");
@@ -130,7 +130,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		else
 		{
 			list.add("Distance");
-			list.add("Best Match");
+			list.add("Popularity");
 		}
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, list);
@@ -209,7 +209,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		{
 			yelpSortChoice = SEARCH_BY_DISTANCE;
 		}
-		else if(choice.equals("Best Match"))
+		else if(choice.equals("Popularity"))
 		{
 			yelpSortChoice = SEARCH_BY_BEST_MATCH;
 		}
@@ -555,6 +555,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		if(mCurrentLocation == null)
 		{
 			mLocationClient.requestLocationUpdates(mLocationRequest, this);
+			Toast.makeText(this, "Cannot find current location, searching...", Toast.LENGTH_LONG).show();
 		}
 		else
 		{
@@ -576,6 +577,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	public void onLocationChanged(Location arg0) {
 		// TODO Auto-generated method stub
 		mLocationClient.removeLocationUpdates(this);
+		
+		if(!mHasFirstSearch)
+		{
+			mHasFirstSearch = true;
+			beginQuery();
+		}
 	}
 
 }

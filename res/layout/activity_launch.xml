@@ -6,41 +6,18 @@
     android:orientation="vertical"
     android:background="@drawable/bg_launcher" >
 
-    <ImageButton
-        android:id="@+id/find_start"
+    <Button
+        android:id="@+id/find_distance"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/button" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/find_start"
-        android:layout_alignRight="@+id/find_start"
-        android:layout_below="@+id/find_start"
-        android:typeface="sans"
-        android:textColor="#ffffff"
-        android:text="Search By:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:typeface="sans"
-        android:textColor="#ffffff"
-        android:gravity="center" />
+        android:text="Distance" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/find_start"
+        android:layout_above="@+id/find_distance"
         android:layout_centerHorizontal="true"
         android:text="Me"
         android:typeface="sans"
@@ -67,12 +44,31 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <Button
+        android:id="@+id/find_popular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/yelp_logo" />
+        android:layout_alignLeft="@+id/find_distance"
+        android:layout_alignRight="@+id/find_distance"
+        android:layout_below="@+id/find_distance"
+        android:text="Popularity" />
+
+    <Button
+        android:id="@+id/find_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/find_popular"
+        android:layout_alignRight="@+id/find_popular"
+        android:layout_below="@+id/find_popular"
+        android:text="Rating" />
+
+    <Button
+        android:id="@+id/about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/find_rating"
+        android:layout_alignRight="@+id/find_rating"
+        android:layout_below="@+id/find_rating"
+        android:text="About Us" />
 
 </RelativeLayout>
