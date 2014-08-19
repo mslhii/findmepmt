@@ -13,15 +13,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,6 +39,9 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -43,6 +49,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ks.googleplaceapidemo.R;
@@ -54,11 +61,13 @@ import com.ks.googleplaceapidemo.R;
  * @Date   7/30/2014
  *
  */
-public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 	private final String PARAMS = "boba milk bubble tea tapioca";
 	private final int SEARCH_BY_BEST_MATCH = 0;
 	private final int SEARCH_BY_DISTANCE = 1;
 	private final int SEARCH_BY_RATING = 2;
+	private final int UPDATE_INTERVAL = 5;
+	private final int FASTEST_INTERVAL = 1;
 	private int yelpSortChoice = SEARCH_BY_DISTANCE;
 
 	private final String TAG = getClass().getSimpleName();
@@ -67,6 +76,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private Location mCurrentLocation;
 	private String provider;
 	private LocationClient mLocationClient;
+	private LocationRequest mLocationRequest;
 	private AdView mAdView;
 	
 	private boolean mHasFirstSearch = false;
@@ -99,6 +109,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		
 		// Client initiates a listener that will provide updates for locations
 		mLocationClient = new LocationClient(this, this, this);
+		mLocationRequest = new LocationRequest();
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		mLocationRequest.setInterval(UPDATE_INTERVAL);
+		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
 		// Generate user list of providers to search
 		ArrayList<String> list = new ArrayList<String>();
@@ -263,7 +277,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 					new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.man))
-							.snippet("I am here!")
+							.snippet("<b>Current Position</b><br>I am here!")
 							.title("Current Position"));
 
 			ArrayList<Marker> markerList = new ArrayList<Marker>();
@@ -408,35 +422,36 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 							image.setImageResource(R.drawable.five);
 						}
 						
-						/*
-						URL newurl;
-						Bitmap mIcon_val;
-						try {
-							Log.e(TAG, "test:" + marker.getTitle());
-							newurl = new URL(marker.getTitle());
-							mIcon_val = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
-							image.setImageBitmap(mIcon_val);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						*/
-						
 						return v;
 					}
 				});
 
 				final Marker firstMarker = markerList.get(0);
 
-				Log.e(TAG, "result size is: " + result.size());
+				Log.d(TAG, "result size is: " + result.size());
+				
+				LatLng currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+				LatLng firstPosition = new LatLng(result.get(0).getLatitude(), result.get(0).getLongitude());
+				
+				LatLngBounds.Builder builder = new LatLngBounds.Builder();
+				builder.include(currentPosition);
+				builder.include(firstPosition);
+				LatLngBounds bounds = builder.build();
+				
+				/*
+				LatLng zoomCoordinates = getZoomDistance(currentPosition, firstPosition);
 				cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(result.get(0).getLatitude(), result
-						.get(0).getLongitude())) // Sets camera to first result
+				.target(firstPosition) // Sets camera to first result
 						.zoom(14) // Sets the zoom
 						.tilt(30) // Sets the tilt of the camera to 30 degrees
 						.build(); // Creates a CameraPosition from the builder
-				mMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
+						*/
+				
+				int padding = 200; // offset from edges of the map in pixels
+				CameraUpdate cameraPositions = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+				mMap.animateCamera(cameraPositions, new GoogleMap.CancelableCallback() {
+				//mMap.animateCamera(CameraUpdateFactory
+				//		.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
 					@Override
 					public void onFinish() {
 						// TODO Auto-generated method stub
@@ -454,7 +469,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 			setProgressBarIndeterminateVisibility(false);
 		}
 
-		ArrayList<Result> processJson(String jsonStuff) throws JSONException 
+		protected ArrayList<Result> processJson(String jsonStuff) throws JSONException 
 		{
 			//Log.w(TAG, jsonStuff);
 			JSONObject json = new JSONObject(jsonStuff);
@@ -466,6 +481,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				businessList.add(Result.jsonToClass(businesses.getJSONObject(i)));
 			}
 			return businessList;
+		}
+		
+		protected LatLng getZoomDistance(LatLng myPosition, LatLng firstPosition)
+		{
+			double minLat = Math.min(myPosition.latitude, firstPosition.latitude);
+			double maxLat = Math.max(myPosition.latitude, firstPosition.latitude);
+			double minLong = Math.min(myPosition.longitude, firstPosition.longitude);
+			double maxLong = Math.min(myPosition.longitude, firstPosition.longitude);
+			return new LatLng((maxLat + minLat) / 2, (maxLong + minLong) / 2);
 		}
 	}
 
@@ -545,15 +569,19 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	@Override
 	public void onConnected(Bundle arg0) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
-
 		mCurrentLocation = mLocationClient.getLastLocation();
-		Log.d("XXX", "location=" + mCurrentLocation.toString());
 		
-		if(!mHasFirstSearch)
+		if(mCurrentLocation == null)
 		{
-			mHasFirstSearch = true;
-			beginQuery();
+			mLocationClient.requestLocationUpdates(mLocationRequest, this);
+		}
+		else
+		{
+			if(!mHasFirstSearch)
+			{
+				mHasFirstSearch = true;
+				beginQuery();
+			}
 		}
 	}
 
@@ -561,6 +589,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Disconnected", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onLocationChanged(Location arg0) {
+		// TODO Auto-generated method stub
+		mLocationClient.removeLocationUpdates(this);
 	}
 
 }

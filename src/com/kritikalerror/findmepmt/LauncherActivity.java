@@ -3,7 +3,12 @@ package com.kritikalerror.findmepmt;
 import com.ks.googleplaceapidemo.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,13 +46,57 @@ public class LauncherActivity extends Activity {
 				public void onClick(View aView)
 				{
 					Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-					Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
-					toAnotherActivity.putExtra("search_type", String.valueOf(spinner.getSelectedItem()));
-					//toAnotherActivity.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-					startActivity(toAnotherActivity);
+					if(!isConnected())
+					{
+						showConnectionAlertToUser();
+					}
+					else
+					{
+						Intent toAnotherActivity = new Intent(aView.getContext(), MainActivity.class);
+						toAnotherActivity.putExtra("search_type", String.valueOf(spinner.getSelectedItem()));
+						startActivity(toAnotherActivity);
+					}
+				}
+				
+				private boolean isConnected()
+				{
+					ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+					NetworkInfo wifiCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+					NetworkInfo dataCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+					
+					return wifiCheck.isConnected() || dataCheck.isConnected();
 				}
 			}
 		);       
+	}
+	
+	private void showConnectionAlertToUser(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+		alertDialogBuilder.setMessage("Internet Connectivity is currently disabled. This app needs the internet to function properly. Please check your connection.");
+		alertDialogBuilder.setCancelable(false);
+		alertDialogBuilder.setPositiveButton("Enable Data",
+				new DialogInterface.OnClickListener(){
+			public void onClick(DialogInterface dialog, int id){
+				Intent settingsIntent = new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS);
+				startActivity(settingsIntent);
+			}
+		});
+		alertDialogBuilder.setNeutralButton("Enable WiFi",
+				new DialogInterface.OnClickListener(){
+			public void onClick(DialogInterface dialog, int id){
+				Intent settingsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+				startActivity(settingsIntent);
+			}
+		});
+		alertDialogBuilder.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener(){
+			public void onClick(DialogInterface dialog, int id){
+				dialog.cancel();
+			}
+		});
+		AlertDialog alert = alertDialogBuilder.create();
+		alert.show();
 	}
 	
 	public class SpinnerCheck implements OnItemSelectedListener {
