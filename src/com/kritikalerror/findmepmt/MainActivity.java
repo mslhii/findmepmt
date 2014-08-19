@@ -438,20 +438,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				builder.include(firstPosition);
 				LatLngBounds bounds = builder.build();
 				
-				/*
-				LatLng zoomCoordinates = getZoomDistance(currentPosition, firstPosition);
-				cameraPosition = new CameraPosition.Builder()
-				.target(firstPosition) // Sets camera to first result
-						.zoom(14) // Sets the zoom
-						.tilt(30) // Sets the tilt of the camera to 30 degrees
-						.build(); // Creates a CameraPosition from the builder
-						*/
 				
-				int padding = 200; // offset from edges of the map in pixels
+				int padding = 200; //TODO: remove hardcoding for calculations
 				CameraUpdate cameraPositions = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 				mMap.animateCamera(cameraPositions, new GoogleMap.CancelableCallback() {
-				//mMap.animateCamera(CameraUpdateFactory
-				//		.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
 					@Override
 					public void onFinish() {
 						// TODO Auto-generated method stub
@@ -481,15 +471,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				businessList.add(Result.jsonToClass(businesses.getJSONObject(i)));
 			}
 			return businessList;
-		}
-		
-		protected LatLng getZoomDistance(LatLng myPosition, LatLng firstPosition)
-		{
-			double minLat = Math.min(myPosition.latitude, firstPosition.latitude);
-			double maxLat = Math.max(myPosition.latitude, firstPosition.latitude);
-			double minLong = Math.min(myPosition.longitude, firstPosition.longitude);
-			double maxLong = Math.min(myPosition.longitude, firstPosition.longitude);
-			return new LatLng((maxLat + minLat) / 2, (maxLong + minLong) / 2);
 		}
 	}
 
