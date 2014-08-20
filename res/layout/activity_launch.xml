@@ -6,69 +6,67 @@
     android:orientation="vertical"
     android:background="@drawable/bg_launcher" >
 
-    <Button
-        android:id="@+id/find_distance"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Distance" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/find_distance"
-        android:layout_centerHorizontal="true"
-        android:text="Me"
-        android:typeface="sans"
-        android:textColor="#ffffff"
-        android:textSize="32sp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:text="Find"
-        android:typeface="sans"
-        android:textColor="#ffffff"
-        android:textSize="32sp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
+    <ImageButton
         android:id="@+id/find_popular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/find_distance"
-        android:layout_alignRight="@+id/find_distance"
-        android:layout_below="@+id/find_distance"
-        android:text="Popularity" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@+drawable/popular_button" />
 
-    <Button
+    <ImageButton
+        android:id="@+id/find_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/find_popular"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/distance_button" />
+
+    <ImageButton
         android:id="@+id/find_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/find_popular"
-        android:layout_alignRight="@+id/find_popular"
         android:layout_below="@+id/find_popular"
-        android:text="Rating" />
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/rating_button" />
 
-    <Button
+    <ImageButton
         android:id="@+id/about"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/find_rating"
-        android:layout_alignRight="@+id/find_rating"
         android:layout_below="@+id/find_rating"
-        android:text="About Us" />
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/about_button" />
+
+    <ImageView
+        android:id="@+id/bubbles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/about"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/bubbles" />
+
+    <ImageView
+        android:id="@+id/straw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/find_distance"
+        android:layout_alignRight="@+id/bubbles"
+        android:background="@android:color/transparent"
+        android:src="@drawable/straw" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/straw"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/logo_new" />
 
 </RelativeLayout>

@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -68,6 +69,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private final int SEARCH_BY_RATING = 2;
 	private final int UPDATE_INTERVAL = 5;
 	private final int FASTEST_INTERVAL = 1;
+	private final int DIPS_VALUE = 80;
 	private int yelpSortChoice = SEARCH_BY_DISTANCE;
 
 	private final String TAG = getClass().getSimpleName();
@@ -272,8 +274,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 			CameraPosition cameraPosition;
 
 			// Add marker of current position
-			mMap.addMarker(new MarkerOptions()
-			.position(
+			Marker currentMarker = mMap.addMarker(new MarkerOptions().position(
 					new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.man))
@@ -438,8 +439,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				builder.include(firstPosition);
 				LatLngBounds bounds = builder.build();
 				
+				// Calculate screen padding for display
+				float dpiDensity = context.getResources().getDisplayMetrics().density;		
+				int padding = (int)(DIPS_VALUE * dpiDensity);
 				
-				int padding = 200; //TODO: remove hardcoding for calculations
 				CameraUpdate cameraPositions = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 				mMap.animateCamera(cameraPositions, new GoogleMap.CancelableCallback() {
 					@Override
@@ -491,7 +494,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.e(TAG, "Refreshing with choice: " + yelpSortChoice);
+		Log.d(TAG, "Refreshing with choice: " + yelpSortChoice);
 		beginQuery();
 		return super.onOptionsItemSelected(item);
 	}
@@ -561,6 +564,14 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		{
 			if(!mHasFirstSearch)
 			{
+				// Animate to initial position
+				CameraPosition cameraPosition = new CameraPosition.Builder()
+				.target(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
+				.zoom(13) // Sets the zoom
+				.tilt(30) // Sets the tilt of the camera to 30 degrees
+				.build(); // Creates a CameraPosition from the builder
+				mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+				
 				mHasFirstSearch = true;
 				beginQuery();
 			}

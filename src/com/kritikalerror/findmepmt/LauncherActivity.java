@@ -27,10 +27,10 @@ public class LauncherActivity extends Activity {
 		setContentView(R.layout.activity_launch);
 		
 		// Set the button
-		final Button distanceButton = (Button) findViewById(R.id.find_distance);
-		final Button popularButton = (Button) findViewById(R.id.find_popular);
-		final Button ratingButton = (Button) findViewById(R.id.find_rating);
-		final Button aboutButton = (Button) findViewById(R.id.about);
+		final ImageButton distanceButton = (ImageButton) findViewById(R.id.find_distance);
+		final ImageButton popularButton = (ImageButton) findViewById(R.id.find_popular);
+		final ImageButton ratingButton = (ImageButton) findViewById(R.id.find_rating);
+		final ImageButton aboutButton = (ImageButton) findViewById(R.id.about);
 
 		distanceButton.setOnClickListener(
 			new View.OnClickListener()
