@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.ks.googleplaceapidemo;
+package com.kritikalerror.findmepmt;
 
 public final class Manifest {
     public static final class permission {

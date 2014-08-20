@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.ks.googleplaceapidemo;
+package com.kritikalerror.findmepmt;
 
 public final class R {
     public static final class array {
@@ -254,15 +254,19 @@ containing a value of this type.
         public static final int find_popular=0x7f050006;
         public static final int find_rating=0x7f050008;
         public static final int hybrid=0x7f050004;
-        public static final int info=0x7f05000e;
+        public static final int info=0x7f050012;
         public static final int logo=0x7f05000c;
         public static final int map=0x7f05000d;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
-        public static final int rating=0x7f05000f;
+        public static final int ok_button=0x7f050011;
+        public static final int rating=0x7f050013;
         public static final int satellite=0x7f050002;
         public static final int straw=0x7f05000b;
         public static final int terrain=0x7f050003;
+        public static final int txt_content=0x7f05000f;
+        public static final int txt_title=0x7f05000e;
+        public static final int yelp=0x7f050010;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
@@ -270,12 +274,15 @@ containing a value of this type.
     public static final class layout {
         public static final int activity_launch=0x7f030000;
         public static final int activity_main=0x7f030001;
-        public static final int marker=0x7f030002;
+        public static final int custom_dialog=0x7f030002;
+        public static final int marker=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
     }
     public static final class string {
+        public static final int about_us=0x7f06001c;
+        public static final int about_us_lite=0x7f06001d;
         public static final int app_name=0x7f06001b;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -371,14 +378,14 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
-        public static final int consumer_key=0x7f06001c;
-        public static final int consumer_secret=0x7f06001d;
-        public static final int google_maps_key=0x7f060020;
+        public static final int consumer_key=0x7f06001e;
+        public static final int consumer_secret=0x7f06001f;
+        public static final int google_maps_key=0x7f060022;
         /**  Location client code resources (prefix with location_client) 
          */
         public static final int location_client_powered_by_google=0x7f06001a;
-        public static final int token=0x7f06001e;
-        public static final int token_secret=0x7f06001f;
+        public static final int token=0x7f060020;
+        public static final int token_secret=0x7f060021;
     }
     public static final class style {
         /** 
@@ -401,6 +408,13 @@ containing a value of this type.
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f0a0001;
+        public static final int CustomAlertDialogStyle=0x7f0a0008;
+        public static final int CustomDialog=0x7f0a0006;
+        public static final int DropDownListView=0x7f0a0007;
+        public static final int HoloExtended=0x7f0a0003;
+        public static final int HoloExtended_ActionBar=0x7f0a0004;
+        public static final int HoloExtended_ActionBar_Text=0x7f0a0005;
+        public static final int HoloNoActionBar=0x7f0a0002;
     }
     public static final class styleable {
         /** Attributes that can be used with a AdsAttrs.
@@ -409,11 +423,11 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AdsAttrs_adSize com.ks.googleplaceapidemo:adSize}</code></td><td>
+           <tr><td><code>{@link #AdsAttrs_adSize com.kritikalerror.findmepmt:adSize}</code></td><td>
     The size of the ad.</td></tr>
-           <tr><td><code>{@link #AdsAttrs_adSizes com.ks.googleplaceapidemo:adSizes}</code></td><td>
+           <tr><td><code>{@link #AdsAttrs_adSizes com.kritikalerror.findmepmt:adSizes}</code></td><td>
     A comma-separated list of the supported ad sizes.</td></tr>
-           <tr><td><code>{@link #AdsAttrs_adUnitId com.ks.googleplaceapidemo:adUnitId}</code></td><td> The ad unit ID.</td></tr>
+           <tr><td><code>{@link #AdsAttrs_adUnitId com.kritikalerror.findmepmt:adUnitId}</code></td><td> The ad unit ID.</td></tr>
            </table>
            @see #AdsAttrs_adSize
            @see #AdsAttrs_adSizes
@@ -439,7 +453,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.ks.googleplaceapidemo:adSize
+          @attr name com.kritikalerror.findmepmt:adSize
         */
         public static final int AdsAttrs_adSize = 0;
         /**
@@ -459,7 +473,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.ks.googleplaceapidemo:adSizes
+          @attr name com.kritikalerror.findmepmt:adSizes
         */
         public static final int AdsAttrs_adSizes = 1;
         /**
@@ -475,7 +489,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.ks.googleplaceapidemo:adUnitId
+          @attr name com.kritikalerror.findmepmt:adUnitId
         */
         public static final int AdsAttrs_adUnitId = 2;
         /** Attributes that can be used with a MapAttrs.
@@ -484,20 +498,20 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #MapAttrs_cameraBearing com.ks.googleplaceapidemo:cameraBearing}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_cameraTargetLat com.ks.googleplaceapidemo:cameraTargetLat}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_cameraTargetLng com.ks.googleplaceapidemo:cameraTargetLng}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_cameraTilt com.ks.googleplaceapidemo:cameraTilt}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_cameraZoom com.ks.googleplaceapidemo:cameraZoom}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_mapType com.ks.googleplaceapidemo:mapType}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiCompass com.ks.googleplaceapidemo:uiCompass}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiRotateGestures com.ks.googleplaceapidemo:uiRotateGestures}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiScrollGestures com.ks.googleplaceapidemo:uiScrollGestures}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiTiltGestures com.ks.googleplaceapidemo:uiTiltGestures}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiZoomControls com.ks.googleplaceapidemo:uiZoomControls}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_uiZoomGestures com.ks.googleplaceapidemo:uiZoomGestures}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_useViewLifecycle com.ks.googleplaceapidemo:useViewLifecycle}</code></td><td></td></tr>
-           <tr><td><code>{@link #MapAttrs_zOrderOnTop com.ks.googleplaceapidemo:zOrderOnTop}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_cameraBearing com.kritikalerror.findmepmt:cameraBearing}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_cameraTargetLat com.kritikalerror.findmepmt:cameraTargetLat}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_cameraTargetLng com.kritikalerror.findmepmt:cameraTargetLng}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_cameraTilt com.kritikalerror.findmepmt:cameraTilt}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_cameraZoom com.kritikalerror.findmepmt:cameraZoom}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_mapType com.kritikalerror.findmepmt:mapType}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiCompass com.kritikalerror.findmepmt:uiCompass}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiRotateGestures com.kritikalerror.findmepmt:uiRotateGestures}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiScrollGestures com.kritikalerror.findmepmt:uiScrollGestures}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiTiltGestures com.kritikalerror.findmepmt:uiTiltGestures}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiZoomControls com.kritikalerror.findmepmt:uiZoomControls}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_uiZoomGestures com.kritikalerror.findmepmt:uiZoomGestures}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_useViewLifecycle com.kritikalerror.findmepmt:useViewLifecycle}</code></td><td></td></tr>
+           <tr><td><code>{@link #MapAttrs_zOrderOnTop com.kritikalerror.findmepmt:zOrderOnTop}</code></td><td></td></tr>
            </table>
            @see #MapAttrs_cameraBearing
            @see #MapAttrs_cameraTargetLat
@@ -521,7 +535,7 @@ containing a value of this type.
             0x7f01000f, 0x7f010010
         };
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#cameraBearing}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#cameraBearing}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -531,11 +545,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:cameraBearing
+          @attr name com.kritikalerror.findmepmt:cameraBearing
         */
         public static final int MapAttrs_cameraBearing = 1;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#cameraTargetLat}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#cameraTargetLat}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -545,11 +559,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:cameraTargetLat
+          @attr name com.kritikalerror.findmepmt:cameraTargetLat
         */
         public static final int MapAttrs_cameraTargetLat = 2;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#cameraTargetLng}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#cameraTargetLng}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -559,11 +573,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:cameraTargetLng
+          @attr name com.kritikalerror.findmepmt:cameraTargetLng
         */
         public static final int MapAttrs_cameraTargetLng = 3;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#cameraTilt}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#cameraTilt}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -573,11 +587,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:cameraTilt
+          @attr name com.kritikalerror.findmepmt:cameraTilt
         */
         public static final int MapAttrs_cameraTilt = 4;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#cameraZoom}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#cameraZoom}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -587,11 +601,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:cameraZoom
+          @attr name com.kritikalerror.findmepmt:cameraZoom
         */
         public static final int MapAttrs_cameraZoom = 5;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#mapType}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#mapType}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -607,11 +621,11 @@ containing a value of this type.
 <tr><td><code>terrain</code></td><td>3</td><td></td></tr>
 <tr><td><code>hybrid</code></td><td>4</td><td></td></tr>
 </table>
-          @attr name com.ks.googleplaceapidemo:mapType
+          @attr name com.kritikalerror.findmepmt:mapType
         */
         public static final int MapAttrs_mapType = 0;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiCompass}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiCompass}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -621,11 +635,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiCompass
+          @attr name com.kritikalerror.findmepmt:uiCompass
         */
         public static final int MapAttrs_uiCompass = 6;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiRotateGestures}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiRotateGestures}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -635,11 +649,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiRotateGestures
+          @attr name com.kritikalerror.findmepmt:uiRotateGestures
         */
         public static final int MapAttrs_uiRotateGestures = 7;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiScrollGestures}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiScrollGestures}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -649,11 +663,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiScrollGestures
+          @attr name com.kritikalerror.findmepmt:uiScrollGestures
         */
         public static final int MapAttrs_uiScrollGestures = 8;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiTiltGestures}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiTiltGestures}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -663,11 +677,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiTiltGestures
+          @attr name com.kritikalerror.findmepmt:uiTiltGestures
         */
         public static final int MapAttrs_uiTiltGestures = 9;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiZoomControls}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiZoomControls}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -677,11 +691,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiZoomControls
+          @attr name com.kritikalerror.findmepmt:uiZoomControls
         */
         public static final int MapAttrs_uiZoomControls = 10;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#uiZoomGestures}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#uiZoomGestures}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -691,11 +705,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:uiZoomGestures
+          @attr name com.kritikalerror.findmepmt:uiZoomGestures
         */
         public static final int MapAttrs_uiZoomGestures = 11;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#useViewLifecycle}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#useViewLifecycle}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -705,11 +719,11 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:useViewLifecycle
+          @attr name com.kritikalerror.findmepmt:useViewLifecycle
         */
         public static final int MapAttrs_useViewLifecycle = 12;
         /**
-          <p>This symbol is the offset where the {@link com.ks.googleplaceapidemo.R.attr#zOrderOnTop}
+          <p>This symbol is the offset where the {@link com.kritikalerror.findmepmt.R.attr#zOrderOnTop}
           attribute's value can be found in the {@link #MapAttrs} array.
 
 
@@ -719,7 +733,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.ks.googleplaceapidemo:zOrderOnTop
+          @attr name com.kritikalerror.findmepmt:zOrderOnTop
         */
         public static final int MapAttrs_zOrderOnTop = 13;
     };

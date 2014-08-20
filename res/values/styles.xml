@@ -16,5 +16,49 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+    <style name="HoloNoActionBar" parent="@android:style/Theme.Holo">
+		<item name="android:windowActionBar">true</item>
+		<item name="android:windowNoTitle">true</item>
+	</style>
+	
+    <style name="HoloExtended" parent="@android:style/Theme.Holo">
+		<item name="android:actionBarStyle">@style/HoloExtended.ActionBar</item>
+        <item name="android:actionMenuTextColor">#EE7600</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView</item>
+	</style>
+	
+    <style name="HoloExtended.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#2F062E</item>
+        <item name="android:titleTextStyle">@style/HoloExtended.ActionBar.Text</item>
+        <item name="android:textColor">#EE7600</item>
+    </style>
+
+    <style name="HoloExtended.ActionBar.Text" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#EE7600</item>
+    </style>
+    
+    <style name="CustomDialog" parent="@android:style/Theme.Holo.Dialog">
+    	<item name="android:alertDialogStyle">@style/CustomAlertDialogStyle</item>
+    	<item name="android:textColorPrimary">#EE7600</item>
+	</style>
+	
+       <style name="DropDownListView" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:divider">#EE7600</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+	
+    <style name="CustomAlertDialogStyle">
+	    <item name="android:bottomBright">#2F062E</item>
+	    <item name="android:bottomDark">#2F062E</item>
+	    <item name="android:bottomMedium">#2F062E</item>
+	    <item name="android:centerBright">#2F062E</item>
+	    <item name="android:centerDark">#2F062E</item>
+	    <item name="android:centerMedium">#2F062E</item>
+	    <item name="android:fullBright">#2F062E</item>
+	    <item name="android:fullDark">#2F062E</item>
+	    <item name="android:topBright">#2F062E</item>
+	    <item name="android:topDark">#2F062E</item>
+	</style>
 
 </resources>

@@ -1,6 +1,6 @@
 package com.kritikalerror.findmepmt;
 
-import com.ks.googleplaceapidemo.R;
+import com.kritikalerror.findmepmt.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,13 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 public class LauncherActivity extends Activity {
 
@@ -94,7 +88,8 @@ public class LauncherActivity extends Activity {
 			{
 				public void onClick(View aView)
 				{
-					aboutUs();
+					CustomDialogClass aboutUs = new CustomDialogClass(LauncherActivity.this);
+					aboutUs.show();
 				}
 			}
 		);
@@ -129,22 +124,6 @@ public class LauncherActivity extends Activity {
 			}
 		});
 		alertDialogBuilder.setNegativeButton("Cancel",
-				new DialogInterface.OnClickListener(){
-			public void onClick(DialogInterface dialog, int id){
-				dialog.cancel();
-			}
-		});
-		AlertDialog alert = alertDialogBuilder.create();
-		alert.show();
-	}
-	
-	private void aboutUs(){
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-		alertDialogBuilder.setMessage("Development: Michael H., Design: Caroline P.");
-		alertDialogBuilder.setTitle("About Us");
-		alertDialogBuilder.setCancelable(false);
-		alertDialogBuilder.setNegativeButton("OK",
 				new DialogInterface.OnClickListener(){
 			public void onClick(DialogInterface dialog, int id){
 				dialog.cancel();

@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.ks.googleplaceapidemo;
+package com.kritikalerror.findmepmt;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

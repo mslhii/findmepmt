@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="175dp"
+    android:background="#2F062E"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="about us"
+        android:textColor="#EE7600"
+        android:textSize="25dp"
+        android:textStyle="bold" >
+    </TextView>
+    
+    <TextView
+        android:id="@+id/txt_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:text="Development: Michael H.\nDesign: Caroline P."
+        android:textColor="#EE7600"
+        android:textSize="15dp" >
+    </TextView>
+    
+    <ImageView
+        android:id="@+id/yelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/yelp_logo" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#3E80B4"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@android:color/white"
+            android:clickable="true"
+            android:text="OK"
+            android:textColor="#EE7600"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

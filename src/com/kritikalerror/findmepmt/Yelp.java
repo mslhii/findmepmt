@@ -9,7 +9,7 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-import com.ks.googleplaceapidemo.R;
+import com.kritikalerror.findmepmt.R;
 
 /**
  * Example for accessing the Yelp API.

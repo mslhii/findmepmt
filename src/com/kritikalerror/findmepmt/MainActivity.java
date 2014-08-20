@@ -13,19 +13,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,7 +49,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.ks.googleplaceapidemo.R;
+import com.kritikalerror.findmepmt.R;
 
 /**
  *  This class is used to search places using Places API using keywords like police,hospital etc.
@@ -255,9 +251,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		protected void onPreExecute() 
 		{
 			super.onPreExecute();
-			dialog = new ProgressDialog(context);
+			dialog = new ProgressDialog(context, R.style.CustomDialog);
 			dialog.setCancelable(false);
-			dialog.setMessage("Loading..");
+			dialog.setTitle("Loading");
+			dialog.setMessage("Please Wait...");
 			dialog.isIndeterminate();
 			dialog.show();
 		}
@@ -278,7 +275,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 					new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.man))
-							.snippet("<b>Current Position</b><br>I am here!")
+							.snippet("<font color=\"black\"><b>Current Position</b><br>I am here!</font>")
 							.title("Current Position"));
 
 			ArrayList<Marker> markerList = new ArrayList<Marker>();
@@ -304,18 +301,18 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 					// Adding the if to safeguard against any failed geocodes
 					if(result.get(i).getLatitude() != null && result.get(i).getLongitude() != null)
 					{
-						String snippetString = "<b>" + result.get(i).getName() + "</b><br>" + 
+						String snippetString = "<font color=\"black\"><b>" + result.get(i).getName() + "</b><br>" + 
 								result.get(i).getAddress();
 
 						// Set phone number
 						if(result.get(i).getPhone() != null)
 						{
 							snippetString = snippetString + "<br><u>+1" + 
-									result.get(i).getPhone() + "</u>";
+									result.get(i).getPhone() + "</u></font>";
 						}
 						else
 						{
-							snippetString = snippetString + "<br>Phone Number unavailable";
+							snippetString = snippetString + "<br>Phone Number unavailable</font>";
 						}
 						
 						// Titleparser string creates a string that contains multiple hidden info for parsing

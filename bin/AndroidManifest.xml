@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ks.googleplaceapidemo"
+    package="com.kritikalerror.findmepmt"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -46,7 +46,11 @@
         </activity>
         <activity
             android:name="com.kritikalerror.findmepmt.MainActivity"
-            android:label="@string/app_name" android:screenOrientation="portrait" >
+            android:label="@string/app_name"
+			android:screenOrientation="portrait"
+			android:theme="@style/HoloExtended" >
+			<!-- android:theme="@android:style/Theme.Holo" -->
+			<!-- android:theme="@style/HoloNoActionBar" -->
 
             
         </activity>
