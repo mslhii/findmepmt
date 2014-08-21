@@ -238,13 +238,14 @@ containing a value of this type.
         public static final int pin=0x7f02002a;
         public static final int popular_button=0x7f02002b;
         public static final int rating_button=0x7f02002c;
-        public static final int straw=0x7f02002d;
-        public static final int three=0x7f02002e;
-        public static final int threehalf=0x7f02002f;
-        public static final int two=0x7f020030;
-        public static final int twohalf=0x7f020031;
-        public static final int yelp_logo=0x7f020032;
-        public static final int zero=0x7f020033;
+        public static final int small_launcher=0x7f02002d;
+        public static final int straw=0x7f02002e;
+        public static final int three=0x7f02002f;
+        public static final int threehalf=0x7f020030;
+        public static final int two=0x7f020031;
+        public static final int twohalf=0x7f020032;
+        public static final int yelp_logo=0x7f020033;
+        public static final int zero=0x7f020034;
     }
     public static final class id {
         public static final int about=0x7f050009;
@@ -281,8 +282,6 @@ containing a value of this type.
         public static final int main=0x7f0b0000;
     }
     public static final class string {
-        public static final int about_us=0x7f06001c;
-        public static final int about_us_lite=0x7f06001d;
         public static final int app_name=0x7f06001b;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -378,14 +377,14 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
-        public static final int consumer_key=0x7f06001e;
-        public static final int consumer_secret=0x7f06001f;
-        public static final int google_maps_key=0x7f060022;
+        public static final int consumer_key=0x7f06001c;
+        public static final int consumer_secret=0x7f06001d;
+        public static final int google_maps_key=0x7f060020;
         /**  Location client code resources (prefix with location_client) 
          */
         public static final int location_client_powered_by_google=0x7f06001a;
-        public static final int token=0x7f060020;
-        public static final int token_secret=0x7f060021;
+        public static final int token=0x7f06001e;
+        public static final int token_secret=0x7f06001f;
     }
     public static final class style {
         /** 

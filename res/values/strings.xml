@@ -1,34 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Find Me PMT</string>
-    <string-array name="search_types">
+    <string name="app_name" translatable="false">Find Me Bubble Tea</string>
+    <string-array name="search_types" translatable="false">
         <item >Distance</item>
         <item >Popularity</item>
         <item >Rating</item>
     </string-array>
-    <string name="about_us" id="@+id/about_us">
-        <![CDATA[
-        <body bgcolor="#2F062E">
-        <center>
-        <b>About Us</b>
-        <font color="#EE7600">
-        <br>Developer: Michael H.</br>
-    	<br>Design: Caroline P.</br> 
-    	</font>
-    	<br>
-    	<img src="file:///android_asset/yelp_logo.png"></img>
-    	</br>
-    	</center>
-    	</body>
-    	]]>   
-    </string>
-    <string name="about_us_lite">
-        <![CDATA[<br>Development: Michael H.</br><br>Design: Caroline P.</br>]]>
-    </string>
-    <string name="consumer_key">z30wCexjvKCkBaNu5DHAXg</string>
-    <string name="consumer_secret">0DSB5heSfWIwO_olredxnyvZ2hA</string>
-    <string name="token">IYjJE9s5Qxf2VZSBDkKzz0PeqRrixM3S</string>
-    <string name="token_secret">kNePiB_O7JNdmjLRx7ey0cPl_kI</string>
-	<string name="google_maps_key">AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M</string>
+    <string name="consumer_key" translatable="false">z30wCexjvKCkBaNu5DHAXg</string>
+    <string name="consumer_secret" translatable="false">0DSB5heSfWIwO_olredxnyvZ2hA</string>
+    <string name="token" translatable="false">IYjJE9s5Qxf2VZSBDkKzz0PeqRrixM3S</string>
+    <string name="token_secret" translatable="false">kNePiB_O7JNdmjLRx7ey0cPl_kI</string>
+	<string name="google_maps_key" translatable="false">AIzaSyD-RjNYm-VCo1rtTwHqjIi8XQz29UAra4M</string>
 </resources>
