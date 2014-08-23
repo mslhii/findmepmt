@@ -102,7 +102,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		if (result != ConnectionResult.SUCCESS) 
 		{
 			Toast.makeText(this, "Google Play service is not available (status=" + result + ")", Toast.LENGTH_LONG).show();
-			showConnectionAlertToUser('w');
 		}
 		
 		// Client initiates a listener that will provide updates for locations
@@ -282,7 +281,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 			if (result.size() == 0)
 			{
-				Toast.makeText(getApplicationContext(), "Yelp cannot find any PMT place near you!",
+				Toast.makeText(getApplicationContext(), "Yelp cannot find any bubble tea place near you!",
 						Toast.LENGTH_LONG).show();
 
 				cameraPosition = new CameraPosition.Builder()
