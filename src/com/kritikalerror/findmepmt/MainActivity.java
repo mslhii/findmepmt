@@ -277,22 +277,28 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		protected void onPreExecute() 
 		{
 			super.onPreExecute();
-			mLoadingDialog = new ProgressDialog(context, R.style.CustomDialog);
-			mLoadingDialog.setCancelable(true);
-			mLoadingDialog.setCanceledOnTouchOutside(false);
-			mLoadingDialog.setTitle("Loading");
-			mLoadingDialog.setMessage("Please Wait...");
-			mLoadingDialog.isIndeterminate();
-			mLoadingDialog.show();
+			if(mLoadingDialog == null) 
+			{
+				mLoadingDialog = new ProgressDialog(context, R.style.CustomDialog);
+				mLoadingDialog.setCancelable(true);
+				mLoadingDialog.setCanceledOnTouchOutside(false);
+				mLoadingDialog.setTitle("Loading");
+				mLoadingDialog.setMessage("Please Wait...");
+				mLoadingDialog.isIndeterminate();
+				mLoadingDialog.show();
+			}
 		}
 
 		// Display results on map
 		@Override
 		protected void onPostExecute(ArrayList<Result> result) {
 			super.onPostExecute(result);
-			if(mLoadingDialog.isShowing()) 
+			
+			// We only want to create one instance of the dialog to prevent the leaking bug
+			if(mLoadingDialog != null) 
 			{
 				mLoadingDialog.dismiss();
+				mLoadingDialog = null;
 			}
 
 			CameraPosition cameraPosition;
@@ -622,7 +628,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 			mLoadingDialog = null;
 		}
 		
-		//Crashes here
 		Toast.makeText(this, "Location found! Searching now.", Toast.LENGTH_LONG).show();
 		if(!mHasFirstSearch)
 		{
