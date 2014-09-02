@@ -76,8 +76,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private LocationClient mLocationClient;
 	private LocationRequest mLocationRequest;
 	private AdView mAdView;
+	private ProgressDialog mLoadingDialog;
 	
 	private boolean mHasFirstSearch = false;
+	private int mAdHeight;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +168,27 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	@Override
 	protected void onPause() {
 		super.onPause();
+		
+		// Reset the dialog to prevent window leaking
+		if (mLoadingDialog != null) 
+		{
+			mLoadingDialog.dismiss();
+			mLoadingDialog = null;
+		}
+
+		mLocationClient.disconnect();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		// Reset the dialog to prevent window leaking
+		if (mLoadingDialog != null) 
+		{
+			mLoadingDialog.dismiss();
+			mLoadingDialog = null;
+		}
 
 		mLocationClient.disconnect();
 	}
@@ -184,6 +207,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		mAdView.setAdSize(AdSize.SMART_BANNER);
 		mAdView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
 		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+		
+		// Get the height for offset calculations
+		AdSize adSize = mAdView.getAdSize();
+		//mAdHeight = adSize.getHeight();
+		mAdHeight = adSize.getHeightInPixels(getApplicationContext());
 		
 		// Add the AdMob view
 		FrameLayout.LayoutParams adParams = 
@@ -226,7 +254,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 	private class GetYelp extends AsyncTask<Void, Void, ArrayList<Result>>
 	{
-		private ProgressDialog dialog;
 		private Context context;
 
 		public GetYelp(Context context) 
@@ -250,21 +277,22 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		protected void onPreExecute() 
 		{
 			super.onPreExecute();
-			dialog = new ProgressDialog(context, R.style.CustomDialog);
-			dialog.setCancelable(false);
-			dialog.setTitle("Loading");
-			dialog.setMessage("Please Wait...");
-			dialog.isIndeterminate();
-			dialog.show();
+			mLoadingDialog = new ProgressDialog(context, R.style.CustomDialog);
+			mLoadingDialog.setCancelable(true);
+			mLoadingDialog.setCanceledOnTouchOutside(false);
+			mLoadingDialog.setTitle("Loading");
+			mLoadingDialog.setMessage("Please Wait...");
+			mLoadingDialog.isIndeterminate();
+			mLoadingDialog.show();
 		}
 
 		// Display results on map
 		@Override
 		protected void onPostExecute(ArrayList<Result> result) {
 			super.onPostExecute(result);
-			if (dialog.isShowing()) 
+			if(mLoadingDialog.isShowing()) 
 			{
-				dialog.dismiss();
+				mLoadingDialog.dismiss();
 			}
 
 			CameraPosition cameraPosition;
@@ -351,10 +379,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				    @Override
 				    public void onInfoWindowClick(Marker marker) {
 				    	String[] titleParseList = marker.getTitle().split(",");
-				        Log.w(TAG, titleParseList[1]);
+				    	if(titleParseList.length > 1)
+				    	{
+				    		Log.w(TAG, titleParseList[1]);
 				        
-				        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(titleParseList[1]));
-				        startActivity(browserIntent);
+				    		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(titleParseList[1]));
+				    		startActivity(browserIntent);
+				    	}
 				    }
 				});
 
@@ -437,7 +468,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				
 				// Calculate screen padding for display
 				float dpiDensity = context.getResources().getDisplayMetrics().density;		
-				int padding = (int)(DIPS_VALUE * dpiDensity);
+				int padding = (int)(DIPS_VALUE * dpiDensity) + mAdHeight;
 				
 				CameraUpdate cameraPositions = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 				mMap.animateCamera(cameraPositions, new GoogleMap.CancelableCallback() {
@@ -476,8 +507,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 	private void initMap() 
 	{
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 	}
 
 	@Override
@@ -585,6 +615,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		// TODO Auto-generated method stub
 		mLocationClient.removeLocationUpdates(this);
 		
+		// Reset the dialog to prevent window leaking
+		if (mLoadingDialog != null) 
+		{
+			mLoadingDialog.dismiss();
+			mLoadingDialog = null;
+		}
+		
+		//Crashes here
+		Toast.makeText(this, "Location found! Searching now.", Toast.LENGTH_LONG).show();
 		if(!mHasFirstSearch)
 		{
 			mHasFirstSearch = true;
