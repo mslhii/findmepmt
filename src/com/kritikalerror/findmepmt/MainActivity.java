@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.scribe.exceptions.OAuthConnectionException;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -14,6 +15,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -150,7 +154,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				if (mCurrentLocation != null) 
 				{
 					setSearchType(searchTypeList.get(itemPosition));
-					mMap.clear();
 					beginQuery();
 				}
 				return true;
@@ -249,7 +252,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	 */
 	private void beginQuery()
 	{
-		new GetYelp(MainActivity.this).execute();
+		if(isConnected())
+		{
+			mMap.clear();
+			new GetYelp(MainActivity.this).execute();
+		}
+		else
+		{
+			showConnectionAlertToUser('w');
+		}
 	}
 
 	private class GetYelp extends AsyncTask<Void, Void, ArrayList<Result>>
@@ -264,11 +275,21 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		// Query Yelp for list of places
 		protected ArrayList<Result> doInBackground(Void... params) {
 			Yelp yelp = Yelp.getYelp(MainActivity.this);
-			String businesses = yelp.search(PARAMS, yelpSortChoice, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 			try {
+				String businesses = yelp.search(PARAMS, yelpSortChoice, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+				if(businesses == null)
+				{
+					businesses = "";
+				}
 				return processJson(businesses);
+			} catch (NullPointerException e) {
+				Log.e(TAG, "No businesses found!" + e.getMessage());
+				return null;
 			} catch (JSONException e) {
-				Log.e("errorage", e.getMessage());
+				Log.e(TAG, "Error in parsing JSON" + e.getMessage());
+				return null;
+			} catch (OAuthConnectionException e) {
+				Log.e(TAG, "OAuthConnection error, cannot connect to the service" + e.getMessage());
 				return null;
 			}
 		}
@@ -497,14 +518,23 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 		protected ArrayList<Result> processJson(String jsonStuff) throws JSONException 
 		{
-			//Log.w(TAG, jsonStuff);
-			JSONObject json = new JSONObject(jsonStuff);
-
-			JSONArray businesses = json.getJSONArray("businesses");
-			ArrayList<Result> businessList = new ArrayList<Result>(businesses.length());
-			for (int i = 0; i < businesses.length(); i++) 
+			ArrayList<Result> businessList;
+			if(jsonStuff.equals(""))
 			{
-				businessList.add(Result.jsonToClass(businesses.getJSONObject(i)));
+				// Return empty array to display no results found
+				businessList = new ArrayList<Result>(0);
+			}
+			else
+			{
+				//Log.w(TAG, jsonStuff);
+				JSONObject json = new JSONObject(jsonStuff);
+	
+				JSONArray businesses = json.getJSONArray("businesses");
+				businessList = new ArrayList<Result>(businesses.length());
+				for (int i = 0; i < businesses.length(); i++) 
+				{
+					businessList.add(Result.jsonToClass(businesses.getJSONObject(i)));
+				}
 			}
 			return businessList;
 		}
@@ -536,6 +566,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		
 		String buttonMsg;
 		String intentChoice;
+		boolean isData = false;
 		
 		if(type == 'g') //GPS is disabled but location network is running
 		{
@@ -551,9 +582,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		}
 		else
 		{
-			alertDialogBuilder.setMessage("WiFi is currently disabled. This app needs WiFi to function properly. Please enable WiFi.");
-			buttonMsg = "Enable WiFi";
-			intentChoice = android.provider.Settings.ACTION_WIFI_SETTINGS;
+			alertDialogBuilder.setMessage("Internet Connectivity is currently disabled. This app needs the internet to function properly. Please check your connection.");
+			buttonMsg = "Enable Data";
+			isData = true;
+			intentChoice = android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS;
 		}
 		
 		final String finalChoice = intentChoice;
@@ -566,6 +598,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				startActivity(settingsIntent);
 			}
 		});
+		if(isData)
+		{
+			alertDialogBuilder.setNeutralButton("Enable WiFi",
+					new DialogInterface.OnClickListener(){
+				public void onClick(DialogInterface dialog, int id){
+					Intent settingsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+					startActivity(settingsIntent);
+				}
+			});
+		}
 		alertDialogBuilder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener(){
 			public void onClick(DialogInterface dialog, int id){
@@ -574,6 +616,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		});
 		AlertDialog alert = alertDialogBuilder.create();
 		alert.show();
+	}
+	
+	private boolean isConnected()
+	{
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifiCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo dataCheck = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		
+		return wifiCheck.isConnected() || dataCheck.isConnected();
 	}
 
 	@Override
@@ -589,6 +640,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		
 		if(mCurrentLocation == null)
 		{
+			final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+		    if(!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) 
+		    {
+		    	showConnectionAlertToUser('l');
+		    }
+		    else if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		    {
+		    	showConnectionAlertToUser('g');
+		    }
 			mLocationClient.requestLocationUpdates(mLocationRequest, this);
 			Toast.makeText(this, "Cannot find current location, searching...", Toast.LENGTH_LONG).show();
 		}
@@ -619,6 +680,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	@Override
 	public void onLocationChanged(Location arg0) {
 		// TODO Auto-generated method stub
+		mCurrentLocation = mLocationClient.getLastLocation();
 		mLocationClient.removeLocationUpdates(this);
 		
 		// Reset the dialog to prevent window leaking
