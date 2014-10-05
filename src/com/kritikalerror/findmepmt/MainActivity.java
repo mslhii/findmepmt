@@ -83,6 +83,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private ProgressDialog mLoadingDialog;
 	
 	private boolean mHasFirstSearch = false;
+	private boolean mHasRefreshed = false;
 	private int mAdHeight;
 
 	@Override
@@ -281,6 +282,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				{
 					businesses = "";
 				}
+				Log.w(TAG, businesses);
 				return processJson(businesses);
 			} catch (NullPointerException e) {
 				Log.e(TAG, "No businesses found!" + e.getMessage());
@@ -334,7 +336,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 			ArrayList<Marker> markerList = new ArrayList<Marker>();
 
-			if (result.size() == 0)
+			if ((result == null) || (result.size() == 0))
 			{
 				Toast.makeText(getApplicationContext(), "Yelp cannot find any bubble tea place near you!",
 						Toast.LENGTH_LONG).show();
@@ -353,7 +355,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 				for (int i = 0; i < result.size(); i++) 
 				{
 					// Adding the if to safeguard against any failed geocodes
-					if(result.get(i).getLatitude() != null && result.get(i).getLongitude() != null)
+					if(result.get(i).getLatitude() != 0.0 && result.get(i).getLongitude() != 0.0)
 					{
 						String snippetString = "<font color=\"black\"><b>" + result.get(i).getName() + "</b><br>" + 
 								result.get(i).getAddress();
@@ -392,7 +394,14 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
 						MarkerOptions markerOptions = new MarkerOptions();
 						markerOptions.position(new LatLng(result.get(i).getLatitude(), result.get(i).getLongitude()));
-						markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
+						if(i == 0)
+						{
+							markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_star));
+						}
+						else
+						{
+							markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
+						}
 						markerOptions.snippet(snippetString);
 						markerOptions.title(titleParser);
 						markerOptions.draggable(false);
@@ -511,6 +520,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 						// TODO Auto-generated method stub
 					}
 				}); 
+				
+				// Refreshing does not redisplay infowindow
+				if(mHasRefreshed)
+				{
+					firstMarker.showInfoWindow();
+					mHasRefreshed = false;
+				}
 			}
 
 			setProgressBarIndeterminateVisibility(false);
@@ -557,6 +573,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(TAG, "Refreshing with choice: " + yelpSortChoice);
+		mHasRefreshed = true;
 		beginQuery();
 		return super.onOptionsItemSelected(item);
 	}

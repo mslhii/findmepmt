@@ -40,8 +40,10 @@ public class Result {
      */
     public Result()
     {
-    	name = "none";
-    	address = "none";
+    	this.name = "none";
+    	this.address = "none";
+    	this.latitude = 0.0;
+    	this.longitude = 0.0;
     }
 
     public String getId() {
@@ -155,8 +157,15 @@ public class Result {
             JSONObject locations = business.getJSONObject("location");
             
             // Set mandatory members
-            result.setName(business.getString("name"));
-            result.setAddress(locations.getJSONArray("address").getString(0));
+            if(business.has("name")) 
+            {
+            	result.setName(business.getString("name"));
+            }
+
+            if(locations.has("address") && (locations.getJSONArray("address").length() > 0)) 
+            {
+            	result.setAddress(locations.getJSONArray("address").getString(0));
+            }
             
             if(locations.has("city")) 
             {
@@ -215,32 +224,35 @@ public class Result {
     
     private void setLatLongFromAddr()
     {
-    	try {
-    		// Prepare the URL
-			URL url = new URL(GEOCODE_URI + URLEncoder.encode(this.address, "UTF-8"));
-			
-			// Prepare the connection
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			
-			// Connect and get results
-			conn.connect();
-			String responseString = convertStreamToString(conn.getInputStream());
-			JSONObject response = new JSONObject(responseString);
-			this.parseJSONLatLong(response.getJSONArray("results").getJSONObject(0));
-			conn.disconnect();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	if(!this.address.equals("none"))
+    	{
+	    	try {
+	    		// Prepare the URL
+				URL url = new URL(GEOCODE_URI + URLEncoder.encode(this.address, "UTF-8"));
+				
+				// Prepare the connection
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				
+				// Connect and get results
+				conn.connect();
+				String responseString = convertStreamToString(conn.getInputStream());
+				JSONObject response = new JSONObject(responseString);
+				this.parseJSONLatLong(response.getJSONArray("results").getJSONObject(0));
+				conn.disconnect();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
     
     private void parseJSONLatLong(JSONObject response)
