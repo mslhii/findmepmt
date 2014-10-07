@@ -10,10 +10,12 @@ import org.scribe.exceptions.OAuthConnectionException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -27,6 +29,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,6 +74,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private final int UPDATE_INTERVAL = 5;
 	private final int FASTEST_INTERVAL = 1;
 	private final int DIPS_VALUE = 80;
+	private final String Search = "searchKey";
 	private int yelpSortChoice = SEARCH_BY_DISTANCE;
 
 	private final String TAG = getClass().getSimpleName();
@@ -81,6 +86,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	private LocationRequest mLocationRequest;
 	private AdView mAdView;
 	private ProgressDialog mLoadingDialog;
+	private SharedPreferences mSharedPrefs;
 	
 	private boolean mHasFirstSearch = false;
 	private boolean mHasRefreshed = false;
@@ -277,7 +283,23 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		protected ArrayList<Result> doInBackground(Void... params) {
 			Yelp yelp = Yelp.getYelp(MainActivity.this);
 			try {
-				String businesses = yelp.search(PARAMS, yelpSortChoice, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+				// Get search parameter terms
+				String searchParams = PARAMS;
+				mSharedPrefs = getSharedPreferences("PMTSettings", Context.MODE_PRIVATE);
+				
+				// Get shared prefs key, otherwise store the default key inside
+				if (mSharedPrefs.contains(Search))
+				{
+					searchParams = mSharedPrefs.getString(Search, "");
+				}
+				else
+				{
+					SharedPreferences.Editor edit = mSharedPrefs.edit();
+		            edit.putString(Search, searchParams);
+		            edit.commit();
+				}
+				
+				String businesses = yelp.search(searchParams, yelpSortChoice, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 				if(businesses == null)
 				{
 					businesses = "";
@@ -567,15 +589,50 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 	{
 		getMenuInflater().inflate(R.menu.main, menu);
 		menu.add(0, 0, 0, "Refresh Search");
+		menu.add(0, 1, 0, "Change Search Terms");
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "Refreshing with choice: " + yelpSortChoice);
-		mHasRefreshed = true;
-		beginQuery();
-		return super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+        	case 0:
+        		Log.d(TAG, "Refreshing with choice: " + yelpSortChoice);
+        		mHasRefreshed = true;
+        		beginQuery();
+        		return super.onOptionsItemSelected(item);
+        	case 1:
+        		final Dialog searchDialog = new Dialog(MainActivity.this);
+				searchDialog.setContentView(R.layout.settings_fragment);
+				
+				final EditText addSearch = (EditText) searchDialog.findViewById(R.id.search);
+				Button saveButton = (Button) searchDialog.findViewById(R.id.saveBtn);
+				
+				searchDialog.setTitle("Enter Yelp Search Terms");
+				
+				if (mSharedPrefs.contains(Search))
+				{
+					addSearch.setText(mSharedPrefs.getString(Search, ""));
+				}
+				
+				saveButton.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+			            String searchParams = addSearch.getText().toString();
+			            SharedPreferences.Editor edit = mSharedPrefs.edit();
+			            edit.putString(Search, searchParams);
+			            edit.commit();
+			            searchDialog.dismiss();
+					}
+					
+				});
+				searchDialog.show();
+        		return super.onOptionsItemSelected(item);
+        	default:
+        		return super.onOptionsItemSelected(item);
+		}
 	}
 
 	private void showConnectionAlertToUser(char type){

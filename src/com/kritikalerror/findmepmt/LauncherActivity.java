@@ -4,27 +4,73 @@ import com.kritikalerror.findmepmt.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 public class LauncherActivity extends Activity {
+	
+	SharedPreferences mSharedPreferences;
+	public static final String Search = "searchKey";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launch);
 		
+		mSharedPreferences = getSharedPreferences("PMTSettings", Context.MODE_PRIVATE);
+		
 		// Set the button
 		final ImageButton distanceButton = (ImageButton) findViewById(R.id.find_distance);
 		final ImageButton popularButton = (ImageButton) findViewById(R.id.find_popular);
 		final ImageButton ratingButton = (ImageButton) findViewById(R.id.find_rating);
 		final ImageButton aboutButton = (ImageButton) findViewById(R.id.about);
+		final ImageButton settingsButton = (ImageButton) findViewById(R.id.bubbles);
+		
+		settingsButton.setOnClickListener(
+				new View.OnClickListener()
+				{
+					public void onClick(View aView)
+					{
+						final Dialog searchDialog = new Dialog(LauncherActivity.this);
+						searchDialog.setContentView(R.layout.settings_fragment);
+						
+						final EditText addSearch = (EditText) searchDialog.findViewById(R.id.search);
+						Button saveButton = (Button) searchDialog.findViewById(R.id.saveBtn);
+						
+						searchDialog.setTitle("Enter Yelp Search Terms");
+						
+						if (mSharedPreferences.contains(Search))
+						{
+							addSearch.setText(mSharedPreferences.getString(Search, ""));
+						}
+						
+						saveButton.setOnClickListener(new View.OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+					            String searchParams = addSearch.getText().toString();
+					            SharedPreferences.Editor edit = mSharedPreferences.edit();
+					            edit.putString(Search, searchParams);
+					            edit.commit();
+					            searchDialog.dismiss();
+							}
+							
+						});
+						searchDialog.show();
+					}
+				}
+			);  
 
 		distanceButton.setOnClickListener(
 			new View.OnClickListener()
@@ -94,6 +140,13 @@ public class LauncherActivity extends Activity {
 			}
 		);
 	}
+	
+	public void saveToPreferences(String fileName, String data) {
+        SharedPreferences myPrefs = getSharedPreferences("Search", MODE_WORLD_WRITEABLE);
+        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        prefsEditor.putString(fileName, data);
+        prefsEditor.commit();
+    }
 	
 	private boolean isConnected()
 	{
