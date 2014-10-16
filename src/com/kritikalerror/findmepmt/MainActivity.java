@@ -215,7 +215,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		FrameLayout layout = (FrameLayout) findViewById(R.id.map);
 
 		mAdView.setAdSize(AdSize.SMART_BANNER);
-		mAdView.setAdUnitId("ca-app-pub-6309606968767978/2177105243");
+		mAdView.setAdUnitId("ca-app-pub-6309606968767978/6485120847");
 		AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
 		
 		// Get the height for offset calculations
@@ -650,7 +650,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 		}
 		else if(type == 'l')
 		{
-			alertDialogBuilder.setMessage("Location Services is currently disabled. This app needs Location Services to function properly. Please enable Location Services.");
+			alertDialogBuilder.setMessage("Google Location Services is currently disabled. This app needs Google Location Services to function properly. Please enable Google Location Services.");
 			buttonMsg = "Enable Location Services";
 			intentChoice = android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 		}
