@@ -144,6 +144,7 @@ int string consumer_key 0x7f06001c
 int string consumer_secret 0x7f06001d
 int string google_maps_key 0x7f060020
 int string location_client_powered_by_google 0x7f06001a
+int string pmt 0x7f060021
 int string token 0x7f06001e
 int string token_secret 0x7f06001f
 int style AppBaseTheme 0x7f0a0000

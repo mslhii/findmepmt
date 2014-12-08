@@ -35,6 +35,7 @@ public class LauncherActivity extends Activity {
 		final ImageButton ratingButton = (ImageButton) findViewById(R.id.find_rating);
 		final ImageButton aboutButton = (ImageButton) findViewById(R.id.about);
 		final ImageButton settingsButton = (ImageButton) findViewById(R.id.bubbles);
+		final ImageButton strawButton = (ImageButton) findViewById(R.id.straw);
 		
 		settingsButton.setOnClickListener(
 				new View.OnClickListener()
@@ -139,6 +140,27 @@ public class LauncherActivity extends Activity {
 				}
 			}
 		);
+		
+		strawButton.setOnClickListener(
+				new View.OnClickListener()
+				{
+					public void onClick(View aView)
+					{
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LauncherActivity.this);			 
+						alertDialogBuilder.setTitle("PMT is NOT called Boba!");
+						alertDialogBuilder
+							.setMessage(R.string.pmt)
+							.setCancelable(false)
+							.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+									dialog.cancel();
+								}
+							  });
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+					}
+				}
+			);
 	}
 	
 	public void saveToPreferences(String fileName, String data) {
