@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class LauncherActivity extends Activity {
 	
@@ -155,6 +156,12 @@ public class LauncherActivity extends Activity {
 								public void onClick(DialogInterface dialog,int id) {
 									dialog.cancel();
 								}
+							  })
+							.setNegativeButton("Copy",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+									copyText();
+									dialog.cancel();
+								}
 							  });
 							AlertDialog alertDialog = alertDialogBuilder.create();
 							alertDialog.show();
@@ -206,5 +213,20 @@ public class LauncherActivity extends Activity {
 		});
 		AlertDialog alert = alertDialogBuilder.create();
 		alert.show();
+	}
+	
+	private void copyText()
+	{
+		int sdk = android.os.Build.VERSION.SDK_INT;
+		if(sdk < android.os.Build.VERSION_CODES.HONEYCOMB) {
+		    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		    clipboard.setText(getString(R.string.pmt));
+		} else {
+		    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE); 
+		    android.content.ClipData clip = android.content.ClipData.newPlainText("PMT", getString(R.string.pmt));
+		    clipboard.setPrimaryClip(clip);
+		}
+		
+		Toast.makeText(this, "Copied this copypasta to your clipboard!", Toast.LENGTH_SHORT).show();
 	}
 }
