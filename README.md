@@ -18,6 +18,6 @@ Version 1.1
 * Hidden search feature (technically you can search for other things in Yelp besides PMT)
 * Better icons
 
-Version 2.0 (in progress)
+Version 2.0 (in progress, but project on hold for now)
 * Total refactoring and reimplementation of code to make it more reusable in the future and possibly more efficient
 
