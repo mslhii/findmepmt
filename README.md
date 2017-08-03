@@ -21,4 +21,4 @@ Version 1.1
 Version 2.0 (in progress, but project on hold for now)
 * Total refactoring and reimplementation of code to make it more reusable in the future and possibly more efficient
 
-Dead projec
+Dead project
